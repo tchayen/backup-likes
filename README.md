@@ -22,3 +22,10 @@ node scripts.mjs
 ## Info
 
 Saves tweets to `archive/`.
+
+## TODO
+
+- [ ] Download list of liked tweets.
+- [ ] Resolve tweet details (attachments, media).
+- [ ] Resolve authors (username, name, avatar).
+- [ ] Resolve shortened URLs (https://t.co/XXXXXXXXXX -> full link).
