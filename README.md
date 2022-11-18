@@ -1,4 +1,4 @@
-It's all WIP. Currently downloads list of tweets divided into files.
+It's all WIP.
 
 Inspired by code from [Twitter API V2 Sample Code](https://github.com/twitterdev/Twitter-API-v2-sample-code).
 
@@ -19,12 +19,29 @@ Then fill the `.env` file with your information.
 ## Run
 
 ```bash
-node scripts.mjs
+node likes.mjs
 ```
 
 ## Info
 
 Saves tweets to `archive/`.
+
+### `likes.mjs`
+
+Downloads all tweets liked by you to directory `likes/`. Likes will be divided into ~100 per file.
+
+Shape of received files:
+
+```ts
+{
+  text: string, // Tweet content.
+  author_id: string, // User ID.
+  created_at: string, // 2019-04-30T09:43:33.000Z
+  lang: string, // en
+  conversation_id: string, // Tweet ID
+  edit_history_tweet_ids: string[] // Tweet IDs.
+},
+```
 
 ## TODO
 
@@ -32,3 +49,7 @@ Saves tweets to `archive/`.
 - [ ] Resolve tweet details (attachments, media).
 - [ ] Resolve authors (username, name, avatar).
 - [ ] Resolve shortened URLs (https://t.co/XXXXXXXXXX -> full link).
+
+```
+
+```
