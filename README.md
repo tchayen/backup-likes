@@ -47,15 +47,19 @@ Run only once!
 
 Loads likes to SQLite database. Skips `edit_history_tweet_ids`.
 
-### `fetchUsersForTweets.mjs` WIP
+### `fetchUsersForTweets.mjs`
 
-Iterates `liked` table in DB and fetches author profiles.
+Iterates `liked` table in DB, fetches author profiles, saves them to the DB.
+
+### `fetchTweetDetails.mjs`
+
+Iterates `liked` table in DB, fetches tweet details and populates them to the db.
 
 ## TODO
 
 - [x] Download list of liked tweets.
 - [ ] Resolve tweet details (attachments, media).
-- [ ] Resolve authors (username, name, avatar).
+- [x] Resolve authors (username, name, avatar).
 - [ ] Resolve shortened URLs (https://t.co/XXXXXXXXXX -> full link).
 
 ```

@@ -3,21 +3,6 @@ import { sleep, openDb } from "./utils.mjs";
 import { oauth, authenticate } from "./authenticate.mjs";
 import { getAuthors, getLikedCount, addUserIfNotExists } from "./db.mjs";
 
-const db = openDb();
-
-db.run(
-  "CREATE TABLE IF NOT EXISTS users(" +
-    "id TEXT PRIMARY KEY," +
-    "name VARCHAR(128)," +
-    "username VARCHAR(128)," +
-    "created_at DATETIME," +
-    "description TEXT," +
-    "location TEXT," +
-    "profile_image_url TEXT," +
-    "url TEXT" +
-    ")"
-);
-
 const params =
   "user.fields=name,username,created_at,description,location,profile_image_url,url";
 
@@ -51,11 +36,24 @@ async function getUser(userId, { oauth_token, oauth_token_secret }) {
 }
 
 (async () => {
+  const db = openDb();
+
+  db.run(
+    "CREATE TABLE IF NOT EXISTS users(" +
+      "id TEXT PRIMARY KEY," +
+      "name VARCHAR(128)," +
+      "username VARCHAR(128)," +
+      "created_at DATETIME," +
+      "description TEXT," +
+      "location TEXT," +
+      "profile_image_url TEXT," +
+      "url TEXT" +
+      ")"
+  );
+
   const oAuthAccessToken = await authenticate();
-
   const count = await getLikedCount(db);
-
-  const requests = 1; //Math.ceil(count / 100);
+  const requests = Math.ceil(count / 100);
 
   for (let i = 0; i < requests; i++) {
     const offset = i * 100;
