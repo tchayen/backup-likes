@@ -1,5 +1,7 @@
 It's all WIP. Currently downloads list of tweets divided into files.
 
+Inspired by code from [Twitter API V2 Sample Code](https://github.com/twitterdev/Twitter-API-v2-sample-code).
+
 ## Install
 
 Go to [Developer portal](https://developer.twitter.com/en/portal/projects/) and set up account if needed. Create a project etc. Generate access tokens. Copy all received tokens.
@@ -25,7 +27,7 @@ Saves tweets to `archive/`.
 
 ## TODO
 
-- [ ] Download list of liked tweets.
+- [x] Download list of liked tweets.
 - [ ] Resolve tweet details (attachments, media).
 - [ ] Resolve authors (username, name, avatar).
 - [ ] Resolve shortened URLs (https://t.co/XXXXXXXXXX -> full link).

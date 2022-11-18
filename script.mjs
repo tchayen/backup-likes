@@ -1,6 +1,14 @@
 import fetch from "node-fetch";
 import fs from "fs";
 
+if (!process.env.TWITTER_BEARER_TOKEN) {
+  throw new Error('Missing "TWITTER_BEARER_TOKEN" environment variable.');
+}
+
+if (!process.env.TWITTER_USER_ID) {
+  throw new Error('Missing "TWITTER_USER_ID" environment variable.');
+}
+
 const token = process.env.TWITTER_BEARER_TOKEN;
 const id = process.env.TWITTER_USER_ID;
 
