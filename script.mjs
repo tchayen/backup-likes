@@ -16,6 +16,7 @@ async function getLikes() {
     const params = {
       ...(nextToken ? { pagination_token: nextToken } : {}),
       max_results: 100,
+      // https://developer.twitter.com/en/docs/twitter-api/fields
       "tweet.fields":
         "lang,author_id,conversation_id,created_at,referenced_tweets",
       // TODO: those need to be resolved elsewhere.
@@ -58,6 +59,8 @@ async function getLikes() {
         stop = true;
       }
 
+      // https://developer.twitter.com/en/docs/twitter-api/tweets/likes/migrate#:~:text=min%20(per%20App)-,75%20requests%20per%2015%20min%20(per%20user),-Requires%20the%20use
+      // API allows for 75 requests per 15 minutes per user. So it gives 5 requests per minute, so one per 12 seconds.
       await sleep(12_000);
     } catch (error) {
       throw new Error(error);
