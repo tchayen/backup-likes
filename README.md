@@ -1,3 +1,5 @@
+It's all WIP. Currently downloads list of tweets divided into files.
+
 ## Install
 
 ```bash

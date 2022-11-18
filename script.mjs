@@ -16,8 +16,9 @@ async function getLikes() {
       max_results: 100,
       "tweet.fields":
         "lang,author_id,conversation_id,created_at,referenced_tweets",
-      "user.fields": "id,name,username",
-      "media.fields": "media_key,type,url,preview_image_url,alt_text",
+      // TODO: those need to be resolved elsewhere.
+      // "user.fields": "id,name,username",
+      // "media.fields": "media_key,type,url,preview_image_url,alt_text",
     };
 
     try {
