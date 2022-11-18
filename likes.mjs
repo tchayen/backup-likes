@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 import fs from "fs";
+import { sleep } from "./utils.mjs";
 
 if (!process.env.TWITTER_BEARER_TOKEN) {
   throw new Error('Missing "TWITTER_BEARER_TOKEN" environment variable.');
@@ -13,8 +14,6 @@ const token = process.env.TWITTER_BEARER_TOKEN;
 const id = process.env.TWITTER_USER_ID;
 
 const endpointURL = `https://api.twitter.com/2/users/${id}/liked_tweets`;
-
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function getLikes() {
   let stop = false;

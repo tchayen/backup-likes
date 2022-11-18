@@ -30,3 +30,5 @@ export async function commandLineInput(prompt) {
     });
   });
 }
+
+export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

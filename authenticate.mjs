@@ -15,15 +15,12 @@ if (!process.env.TWITTER_CONSUMER_SECRET) {
 const consumerKey = process.env.TWITTER_CONSUMER_KEY;
 const consumerSecret = process.env.TWITTER_CONSUMER_SECRET;
 
-const params =
-  "user.fields=name,username,created_at,description,location,profile_image_url,url";
-
 const requestTokenURL =
   "https://api.twitter.com/oauth/request_token?oauth_callback=oob";
 const authorizeURL = new URL("https://api.twitter.com/oauth/authorize");
 const accessTokenURL = "https://api.twitter.com/oauth/access_token";
 
-const oauth = OAuth({
+export const oauth = OAuth({
   consumer: {
     key: consumerKey,
     secret: consumerSecret,
@@ -73,36 +70,7 @@ async function getAccessToken({ oauth_token, oauth_token_secret }, verifier) {
   return paramsToObject(response.entries());
 }
 
-async function getUser(userId, { oauth_token, oauth_token_secret }) {
-  const token = {
-    key: oauth_token,
-    secret: oauth_token_secret,
-  };
-
-  const endpointURL = `https://api.twitter.com/2/users/${userId}?${params}`;
-
-  const authHeader = oauth.toHeader(
-    oauth.authorize(
-      {
-        url: endpointURL,
-        method: "GET",
-      },
-      token
-    )
-  );
-
-  const request = await fetch(endpointURL, {
-    method: "GET",
-    headers: {
-      Authorization: authHeader["Authorization"],
-    },
-  });
-
-  const response = await request.json();
-  return response;
-}
-
-(async () => {
+export async function authenticate() {
   const oAuthRequestToken = await getRequestToken();
 
   authorizeURL.searchParams.append(
@@ -114,7 +82,5 @@ async function getUser(userId, { oauth_token, oauth_token_secret }) {
 
   const oAuthAccessToken = await getAccessToken(oAuthRequestToken, pin.trim());
 
-  // const response = await getUser(, oAuthAccessToken);
-
-  console.log(response);
-})();
+  return oAuthAccessToken;
+}
