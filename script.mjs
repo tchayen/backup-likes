@@ -6,6 +6,8 @@ const id = process.env.TWITTER_USER_ID;
 
 const endpointURL = `https://api.twitter.com/2/users/${id}/liked_tweets`;
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function getLikes() {
   let stop = false;
   let requests = 0;
@@ -56,9 +58,7 @@ async function getLikes() {
         stop = true;
       }
 
-      if (requests > 2) {
-        stop = true;
-      }
+      await sleep(12_000);
     } catch (error) {
       throw new Error(error);
     }
