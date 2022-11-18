@@ -4,7 +4,12 @@ Inspired by code from [Twitter API V2 Sample Code](https://github.com/twitterdev
 
 ## Install
 
-Go to [Developer portal](https://developer.twitter.com/en/portal/projects/) and set up account if needed. Create a project etc. Generate access tokens. Copy all received tokens.
+### Requirements
+
+- Go to [Developer portal](https://developer.twitter.com/en/portal/projects/) and set up account if needed. Create a project etc. Generate access tokens. Copy all received tokens.
+- Install SQLite.
+
+Then run:
 
 ```bash
 git clone git@github.com:tchayen/backup-likes.git
@@ -12,19 +17,12 @@ cd backup-likes
 mv .env.template .env
 mkdir archive
 yarn
+sqlite3 database.db
 ```
 
 Then fill the `.env` file with your information.
 
-## Run
-
-```bash
-node likes.mjs
-```
-
-## Info
-
-Saves tweets to `archive/`.
+## Docs
 
 ### `likes.mjs`
 
@@ -42,6 +40,16 @@ Shape of received files:
   edit_history_tweet_ids: string[] // Tweet IDs.
 },
 ```
+
+### `loadLikesToDb.mjs`
+
+Run only once!
+
+Loads likes to SQLite database. Skips `edit_history_tweet_ids`.
+
+### `fetchUsersForTweets.mjs`
+
+Iterates `liked` table in DB and fetches author profiles.
 
 ## TODO
 
