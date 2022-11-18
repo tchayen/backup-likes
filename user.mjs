@@ -2,6 +2,7 @@ import crypto from "crypto";
 import fetch from "node-fetch";
 import OAuth from "oauth-1.0a";
 import readline from "readline";
+import { paramsToObject } from "./utils.mjs";
 
 const Readline = readline.createInterface({
   input: process.stdin,
@@ -19,7 +20,8 @@ if (!process.env.TWITTER_CONSUMER_SECRET) {
 const consumerKey = process.env.TWITTER_CONSUMER_KEY;
 const consumerSecret = process.env.TWITTER_CONSUMER_SECRET;
 
-const params = "user.fields=name,username,created_at,description";
+const params =
+  "user.fields=name,username,created_at,description,location,profile_image_url,url";
 const endpointURL = `https://api.twitter.com/2/users/me?${params}`;
 
 const requestTokenURL =
@@ -61,8 +63,8 @@ async function getRequestToken() {
     },
   });
 
-  const response = await request.json();
-  return response;
+  const response = new URLSearchParams(await request.text());
+  return paramsToObject(response.entries());
 }
 
 async function getAccessToken({ oauth_token, oauth_token_secret }, verifier) {
@@ -82,8 +84,8 @@ async function getAccessToken({ oauth_token, oauth_token_secret }, verifier) {
     },
   });
 
-  const response = await request.json();
-  return response;
+  const response = new URLSearchParams(await request.text());
+  return paramsToObject(response.entries());
 }
 
 async function getUser({ oauth_token, oauth_token_secret }) {
@@ -125,6 +127,7 @@ async function getUser({ oauth_token, oauth_token_secret }) {
 
   const oAuthAccessToken = await getAccessToken(oAuthRequestToken, pin.trim());
 
-  const response = await getRequest(oAuthAccessToken);
+  const response = await getUser(oAuthAccessToken);
+
   console.log(response);
 })();
