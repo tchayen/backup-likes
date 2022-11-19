@@ -80,15 +80,7 @@ async function checkIfAuthorExists(db, authorId) {
   });
 }
 
-/**
- *
- */
-export async function addUserIfNotExists(db, id, user) {
-  if (await checkIfAuthorExists(db, id)) {
-    console.log("Author already exists.");
-    return;
-  }
-
+async function addUser(db, id, user) {
   return new Promise((resolve, reject) => {
     db.run(
       "INSERT INTO users (id, name, username, created_at, description, location, profile_image_url, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
@@ -110,4 +102,18 @@ export async function addUserIfNotExists(db, id, user) {
       }
     );
   });
+}
+
+/**
+ * @returns false if user already exists, true if user was added.
+ */
+export async function addUserIfNotExists(db, id, user) {
+  if (await checkIfAuthorExists(db, id)) {
+    console.log("Author already exists.");
+    return false;
+  }
+
+  await addUser(db, id, user);
+
+  return true;
 }

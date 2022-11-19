@@ -63,12 +63,14 @@ async function getUser(userId, { oauth_token, oauth_token_secret }) {
 
     for await (const author of authors) {
       const user = await getUser(author, oAuthAccessToken);
-      await addUserIfNotExists(db, author, user.data);
-      console.log(user.data);
+      const added = await addUserIfNotExists(db, author, user.data);
+      if (added) {
+        console.log(user.data);
 
-      // https://developer.twitter.com/en/docs/twitter-api/rate-limits
-      // 300 per 15 minutes, 20 per minute, 1 per 3 seconds.
-      await sleep(3_000);
+        // https://developer.twitter.com/en/docs/twitter-api/rate-limits
+        // 300 per 15 minutes, 20 per minute, 1 per 3 seconds.
+        await sleep(3_000);
+      }
     }
   }
 
