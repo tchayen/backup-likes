@@ -22,9 +22,21 @@ sqlite3 database.db
 
 Then fill the `.env` file with your information.
 
+## Run
+
+```bash
+# 1. Download likes
+node src/likes.mjs
+# 2. Store them in DB.
+node src/loadLikesToDb.mjs
+# 3. Fetch tweet authors.
+node src/fetchUsersForTweets.mjs
+# WIP
+```
+
 ## Docs
 
-### `likes.mjs`
+### `src/likes.mjs`
 
 Downloads all tweets liked by you to directory `likes/`. Likes will be divided into ~100 per file.
 
@@ -41,17 +53,19 @@ Shape of received files:
 },
 ```
 
-### `loadLikesToDb.mjs`
+### `src/loadLikesToDb.mjs`
 
 Run only once!
 
 Loads likes to SQLite database. Skips `edit_history_tweet_ids`.
 
-### `fetchUsersForTweets.mjs`
+### `src/fetchUsersForTweets.mjs`
 
 Iterates `liked` table in DB, fetches author profiles, saves them to the DB.
 
-### `fetchTweetDetails.mjs`
+### `src/fetchTweetDetails.mjs` WIP
+
+Not working for now. Figuring out some problem with authentication.
 
 Iterates `liked` table in DB, fetches tweet details and populates them to the db.
 
