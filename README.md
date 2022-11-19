@@ -54,6 +54,16 @@ Iterates `liked` table in DB, fetches author profiles, saves them to the DB.
 
 Will be replaced by just `src/likes.mjs`.
 
+## Viewer
+
+```bash
+cd viewer
+yarn
+yarn dev
+```
+
+Go to `localhost:3000`.
+
 ## TODO
 
 - [x] Download list of liked tweets.

@@ -26,6 +26,29 @@ export default async function handler(
     return {
       id: tweet.id,
       text: tweet.text,
+      ...(tweet.attachments && tweet.attachments.media_keys
+        ? {
+            attachments: tweet.attachments.media_keys.map((attachment) => {
+              return file.includes.media.find(
+                (media) => media.media_key === attachment
+              );
+            }),
+          }
+        : {}),
+      ...(tweet.referenced_tweets
+        ? {
+            referenced_tweets: tweet.referenced_tweets.map(
+              (referenced_tweet) => {
+                const referenced = file.includes.tweets.find(
+                  (tweet) => tweet.id === referenced_tweet.id
+                );
+                // TODO: add author.
+
+                return { ...referenced, type: referenced_tweet.type };
+              }
+            ),
+          }
+        : {}),
       user: file.includes.users.find((user) => user.id === tweet.author_id),
       created_at: tweet.created_at,
     };
