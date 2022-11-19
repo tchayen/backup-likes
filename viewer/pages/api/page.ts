@@ -76,7 +76,6 @@ export default async function handler(
                   const author = file.includes.users.find(
                     (user) => user.id === referenced.author_id
                   );
-                  // TODO: add author.
 
                   return { ...referenced, author, type: referenced_tweet.type };
                 }

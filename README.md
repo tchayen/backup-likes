@@ -17,7 +17,6 @@ cd backup-likes
 mv .env.template .env
 mkdir likes
 yarn
-sqlite3 database.db
 ```
 
 Then fill the `.env` file with your information.
@@ -27,11 +26,11 @@ Then fill the `.env` file with your information.
 ```bash
 # 1. Download likes
 node src/likes.mjs
-# 2. Store them in DB.
-node src/loadLikesToDb.mjs
-# 3. Fetch tweet authors.
-node src/fetchUsersForTweets.mjs
-# WIP
+# 2. Open viewer.
+cd viewer
+yarn
+yarn dev
+# 3. Go to localhost:3000
 ```
 
 ## Docs
@@ -42,31 +41,20 @@ Downloads all tweets liked by you to directory `likes/`. Likes will be divided i
 
 Downloaded tweets can contain mentions, referenced tweets and attachments.
 
-### `src/loadLikesToDb.mjs`
+### _CURRENTLY NOT USED_ `src/loadLikesToDb.mjs`
 
-Run only once!
+_Run only once, it doesn't check for uniqueness._
 
 Loads likes to SQLite database. Creates users, referenced tweets and media too.
 
-### _DO NOT USE_ `src/fetchUsersForTweets.mjs`
+### _CURRENTLY NOT USED_ `src/fetchUsersForTweets.mjs`
 
 Iterates `liked` table in DB, fetches author profiles, saves them to the DB.
 
-Will be replaced by just `src/likes.mjs`.
-
-## Viewer
-
-```bash
-cd viewer
-yarn
-yarn dev
-```
-
-Go to `localhost:3000`.
-
 ## TODO
 
-- [x] Download list of liked tweets.
-- [ ] Rebuild the script to populate DB from the liked tweets.
-- [ ] Resolve shortened URLs (https://t.co/XXXXXXXXXX -> full link).
-- [ ] Resolve media?
+- [x] Long username can make tweet overflow.
+- [x] Style replied and quoted tweets.
+- [ ] Resolve URLs in referenced tweets.
+- [ ] Images need some border, maybe.
+- [ ] Make sure that referenced tweets have full width.

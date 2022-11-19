@@ -130,12 +130,6 @@ export default function Index(
     quoted: "Quoted",
   };
 
-  // TODO:
-  // - Images need some border, maybe.
-  // - Long username can make tweet overflow.
-  // - Style replied and quoted tweets.
-  // - Make sure that referenced tweets have full width.
-
   return (
     <div className="flex justify-center bg-black">
       <div className="flex flex-col w-600px">
