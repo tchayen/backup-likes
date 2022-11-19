@@ -109,7 +109,7 @@ export default function Index(
   props: Awaited<ReturnType<typeof getStaticProps>>["props"]
 ) {
   const pageCount = props.directory.length;
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(190);
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -195,7 +195,9 @@ export default function Index(
                                   :
                                 </div>
                                 <div className="p-4 rounded bg-slate-900 flex gap-4">
-                                  <Avatar user={referenced_tweet.author} />
+                                  {referenced_tweet.author && (
+                                    <Avatar user={referenced_tweet.author} />
+                                  )}
                                   <div className="flex flex-col gap-2">
                                     {referenced_tweet.author && (
                                       <TopBar
@@ -203,9 +205,11 @@ export default function Index(
                                         created_at={referenced_tweet.created_at}
                                       />
                                     )}
-                                    <FormatTweet
-                                      tweet={referenced_tweet.text}
-                                    />
+                                    {referenced_tweet.text && (
+                                      <FormatTweet
+                                        tweet={referenced_tweet.text}
+                                      />
+                                    )}
                                   </div>
                                 </div>
                               </div>

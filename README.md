@@ -58,3 +58,5 @@ Iterates `liked` table in DB, fetches author profiles, saves them to the DB.
 - [ ] Resolve URLs in referenced tweets.
 - [ ] Images need some border, maybe.
 - [ ] Make sure that referenced tweets have full width.
+- [ ] Store resolved links locally, do it once.
+- [ ] Fetch images (avatars, attachments) locally.

@@ -73,6 +73,10 @@ export default async function handler(
                     (tweet) => tweet.id === referenced_tweet.id
                   );
 
+                  if (!referenced) {
+                    return referenced_tweet;
+                  }
+
                   const author = file.includes.users.find(
                     (user) => user.id === referenced.author_id
                   );
