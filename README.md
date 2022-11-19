@@ -15,7 +15,7 @@ Then run:
 git clone git@github.com:tchayen/backup-likes.git
 cd backup-likes
 mv .env.template .env
-mkdir archive
+mkdir likes
 yarn
 sqlite3 database.db
 ```
@@ -63,19 +63,8 @@ Loads likes to SQLite database. Skips `edit_history_tweet_ids`.
 
 Iterates `liked` table in DB, fetches author profiles, saves them to the DB.
 
-### `src/fetchTweetDetails.mjs` WIP
-
-Not working for now. Figuring out some problem with authentication.
-
-Iterates `liked` table in DB, fetches tweet details and populates them to the db.
-
 ## TODO
 
 - [x] Download list of liked tweets.
-- [ ] Resolve tweet details (attachments, media).
-- [x] Resolve authors (username, name, avatar).
+- [ ] Rebuild the script to populate DB from the liked tweets.
 - [ ] Resolve shortened URLs (https://t.co/XXXXXXXXXX -> full link).
-
-```
-
-```

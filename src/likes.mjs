@@ -23,9 +23,14 @@ async function getLikes() {
     const params = {
       ...(nextToken ? { pagination_token: nextToken } : {}),
       max_results: 100,
+      expansions:
+        "attachments.media_keys,author_id,referenced_tweets.id,in_reply_to_user_id,entities.mentions.username,referenced_tweets.id.author_id",
       // https://developer.twitter.com/en/docs/twitter-api/fields
       "tweet.fields":
         "lang,author_id,conversation_id,created_at,referenced_tweets",
+      "user.fields":
+        "name,username,created_at,description,location,profile_image_url,url",
+      "media.fields": "type,url,preview_image_url,alt_text",
     };
 
     try {
@@ -45,8 +50,8 @@ async function getLikes() {
 
       console.log(response);
 
-      const path = `./archive/tweets${nextToken ? `-${nextToken}` : ""}.json`;
-      fs.writeFile(path, JSON.stringify(response.data, null, 4), (error) => {
+      const path = `./likes/tweets${nextToken ? `-${nextToken}` : ""}.json`;
+      fs.writeFile(path, JSON.stringify(response, null, 4), (error) => {
         if (error) {
           throw new Error(error);
         }

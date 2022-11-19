@@ -20,9 +20,11 @@ const likedFiles = fs.readdirSync("./likes");
 
 for await (const file of likedFiles) {
   const liked = JSON.parse(fs.readFileSync(`./likes/${file}`, "utf8"));
-  for await (const tweet of liked) {
+  for await (const tweet of liked.data) {
     await addLikedTweet(db, tweet);
   }
+
+  // TODO: handle authors too.
 }
 
 // TODO: this script hangs, I am unsure why.
