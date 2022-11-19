@@ -40,31 +40,23 @@ node src/fetchUsersForTweets.mjs
 
 Downloads all tweets liked by you to directory `likes/`. Likes will be divided into ~100 per file.
 
-Shape of received files:
-
-```ts
-{
-  text: string, // Tweet content.
-  author_id: string, // User ID.
-  created_at: string, // 2019-04-30T09:43:33.000Z
-  lang: string, // en
-  conversation_id: string, // Tweet ID
-  edit_history_tweet_ids: string[] // Tweet IDs.
-},
-```
+Downloaded tweets can contain mentions, referenced tweets and attachments.
 
 ### `src/loadLikesToDb.mjs`
 
 Run only once!
 
-Loads likes to SQLite database. Skips `edit_history_tweet_ids`.
+Loads likes to SQLite database. Creates users, referenced tweets and media too.
 
-### `src/fetchUsersForTweets.mjs`
+### _DO NOT USE_ `src/fetchUsersForTweets.mjs`
 
 Iterates `liked` table in DB, fetches author profiles, saves them to the DB.
+
+Will be replaced by just `src/likes.mjs`.
 
 ## TODO
 
 - [x] Download list of liked tweets.
 - [ ] Rebuild the script to populate DB from the liked tweets.
 - [ ] Resolve shortened URLs (https://t.co/XXXXXXXXXX -> full link).
+- [ ] Resolve media?

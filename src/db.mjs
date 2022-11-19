@@ -117,3 +117,98 @@ export async function addUserIfNotExists(db, id, user) {
 
   return true;
 }
+
+export async function checkIfMediaExists(db, id) {
+  return new Promise((resolve, reject) => {
+    db.get("SELECT COUNT(*) FROM media WHERE id = ?", [id], (error, row) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(Object.entries(row)[0][1] > 0);
+      }
+    });
+  });
+}
+
+export async function addMedia(db, id, media) {
+  return new Promise((resolve, reject) => {
+    db.run(
+      "INSERT INTO media (id, type, url, preview_image_url, alt_text) VALUES (?, ?, ?, ?, ?, ?)",
+      [id, media.type, media.url, media.preview_image_url, media.alt_text],
+      (error) => {
+        if (error) {
+          reject(error);
+        }
+        resolve();
+      }
+    );
+  });
+}
+
+export async function addMediaIfNotExists(db, id, media) {
+  if (await checkIfMediaExists(db, id)) {
+    console.log("Media already exists.");
+    return false;
+  }
+
+  await addMedia(db, id, media);
+
+  return true;
+}
+
+export async function checkIfTweetExists(db, id) {
+  return new Promise((resolve, reject) => {
+    db.get("SELECT COUNT(*) FROM tweets WHERE id = ?", [id], (error, row) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(Object.entries(row)[0][1] > 0);
+      }
+    });
+  });
+}
+
+export async function addMention(db, id, mention) {
+  return new Promise((resolve, reject) => {
+    db.run(
+      "INSERT INTO mentions (id, tweet_id, author_id) VALUES (?, ?, ?)",
+      [id, mention.tweet_id, mention.author_id],
+      (error) => {
+        if (error) {
+          reject(error);
+        }
+        resolve();
+      }
+    );
+  });
+}
+
+export async function addAttachment(db, attachment) {
+  return new Promise((resolve, reject) => {
+    db.run(
+      "INSERT INTO attachments (tweet_id, media_key) VALUES (?, ?)",
+      [attachment.tweet_id, attachment.media_key],
+      (error) => {
+        if (error) {
+          reject(error);
+        }
+        resolve();
+      }
+    );
+  });
+}
+
+export async function addReferencedTweet(db, referencedTweet) {
+  return new Promise((resolve, reject) => {
+    db.run(
+      "INSERT INTO referenced_tweets (tweet_id, type, id) VALUES (?, ?, ?)",
+      [referencedTweet.tweet_id, referencedTweet.type, referencedTweet.id],
+      (error) => {
+        if (error) {
+          reject(error);
+        }
+        resolve();
+      }
+    );
+  });
+}
