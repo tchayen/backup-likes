@@ -6,7 +6,7 @@ import { format } from "date-fns";
 const Avatar = ({ user }) => {
   return (
     <img
-      className="rounded-full w-12 h-12"
+      className="h-12 w-12 rounded-full"
       src={user.profile_image_url}
       alt={`Avatar of ${user.name}`}
     />
@@ -16,7 +16,7 @@ const Avatar = ({ user }) => {
 const TopBar = ({ user, created_at }) => {
   return (
     <div className="flex gap-1">
-      <div className="text-white font-bold whitespace-nowrap text-ellipsis overflow-hidden">
+      <div className="overflow-hidden text-ellipsis whitespace-nowrap font-bold text-white">
         {user.name}
       </div>
       <div>
@@ -24,7 +24,7 @@ const TopBar = ({ user, created_at }) => {
           target="_blank"
           rel="noreferrer"
           href={`https://twitter.com/${user.username}`}
-          className="rounded decoration-2 underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-sky-500 decoration-slate-600"
+          className="rounded decoration-slate-600 decoration-2 underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-sky-500"
         >
           @{user.username}
         </Link>
@@ -46,7 +46,7 @@ const StyledLink = ({
       target="_blank"
       rel="noreferrer"
       href={href}
-      className="break-words break-all rounded text-slate-100 decoration-2 underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-sky-500 decoration-slate-600"
+      className="break-words break-all rounded text-slate-100 decoration-slate-600 decoration-2 underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-sky-500"
     >
       {children}
     </Link>
@@ -112,15 +112,21 @@ function Pager({
       </div>
       <button
         disabled={page === 0}
-        onClick={() => setPage(Math.max(page - 1, 0))}
-        className="bg-slate-800 font-bold rounded px-2 h-8"
+        onClick={() => {
+          setPage(Math.max(page - 1, 0));
+          window.scrollTo(0, 0);
+        }}
+        className="h-8 rounded bg-slate-800 px-2 font-bold"
       >
         Previous
       </button>
       <button
         disabled={page + 1 === pageCount}
-        onClick={() => setPage(Math.min(page + 1, pageCount - 1))}
-        className="bg-slate-800 font-bold rounded px-2 h-8"
+        onClick={() => {
+          setPage(Math.min(page + 1, pageCount - 1));
+          window.scrollTo(0, 0);
+        }}
+        className="h-8 rounded bg-slate-800 px-2 font-bold"
       >
         Next
       </button>
@@ -166,15 +172,15 @@ export default function Index(
 
   return (
     <div className="flex justify-center">
-      <div className="flex flex-col w-600px">
+      <div className="flex w-600px flex-col">
         <Pager page={page} setPage={setPage} pageCount={pageCount} />
-        <div className="flex flex-col divide-y border-l border-t border-b border-r border-slate-800 divide-slate-800">
+        <div className="flex flex-col divide-y divide-slate-800 border-l border-t border-b border-r border-slate-800">
           {data?.map((tweet) => {
             return (
-              <div key={tweet.id} className="text-slate-400 flex flex-col p-4">
+              <div key={tweet.id} className="flex flex-col p-4 text-slate-400">
                 <div className="flex gap-3">
                   <Avatar user={tweet.user} />
-                  <div className="flex flex-col w-full">
+                  <div className="flex w-full flex-col">
                     <TopBar user={tweet.user} created_at={tweet.created_at} />
                     <FormatTweet tweet={tweet.text} />
                     <div className="mt-4 flex flex-col gap-4">
@@ -184,7 +190,7 @@ export default function Index(
                             if (attachment.type === "photo") {
                               return (
                                 <img
-                                  className="rounded overflow-hidden"
+                                  className="overflow-hidden rounded"
                                   src={attachment.url}
                                   alt="Tweet attachment"
                                 />
@@ -194,13 +200,13 @@ export default function Index(
                         </div>
                       )}
                       {tweet.referenced_tweets && (
-                        <div className="flex flex-col gap-4 w-full">
+                        <div className="flex w-full flex-col gap-4">
                           {tweet.referenced_tweets.map(
                             (referenced_tweet: any) => {
                               return (
                                 <div
                                   key={referenced_tweet.id}
-                                  className="flex flex-col gap-2 w-full"
+                                  className="flex w-full flex-col gap-2"
                                 >
                                   <div>
                                     {
@@ -210,7 +216,7 @@ export default function Index(
                                     }
                                     :
                                   </div>
-                                  <div className="p-4 rounded bg-slate-900 flex gap-4">
+                                  <div className="flex gap-4 rounded bg-slate-900 p-4">
                                     {referenced_tweet.author && (
                                       <Avatar user={referenced_tweet.author} />
                                     )}
