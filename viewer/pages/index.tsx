@@ -3,7 +3,17 @@ import Link from "next/link";
 import { Dispatch, ReactNode, useEffect, useState } from "react";
 import { format } from "date-fns";
 
-const Avatar = ({ user }) => {
+type User = {
+  name: string;
+  username: string;
+  id: string;
+  created_at: string;
+  profile_image_url: string;
+  location: string;
+  description: string;
+};
+
+const Avatar = ({ user }: { user: User }) => {
   return (
     <div className="h-12 w-12 flex-shrink-0 rounded-full bg-slate-900">
       <img
@@ -18,7 +28,7 @@ const Avatar = ({ user }) => {
   );
 };
 
-const TopBar = ({ user, created_at }) => {
+const TopBar = ({ user, created_at }: { user: User; created_at: string }) => {
   return (
     <div className="flex flex-wrap gap-1" style={{ width: 400 }}>
       <div className="overflow-hidden text-ellipsis whitespace-nowrap font-bold text-white">
@@ -111,11 +121,11 @@ function Pager({
 }: {
   page: number;
   setPage: Dispatch<number>;
-  setData: Dispatch<any>;
+  setData: Dispatch<any[]>;
   pageCount: number;
 }) {
   const after = () => {
-    setData(null);
+    setData([]);
     window.scrollTo(0, 0);
   };
 
@@ -160,6 +170,7 @@ function Attachments({ attachments }: { attachments: any[] }) {
         if (attachment.type === "photo") {
           return (
             <img
+              key={attachment.media_key}
               className="overflow-hidden rounded-xl"
               src={attachment.url.replace("https://pbs.twimg.com/", "/assets/")}
               alt="Tweet attachment"
@@ -186,8 +197,8 @@ export default function Index(
   props: Awaited<ReturnType<typeof getStaticProps>>["props"]
 ) {
   const pageCount = props.directory.length;
-  const [page, setPage] = useState(180);
-  const [data, setData] = useState(null);
+  const [page, setPage] = useState<number>(180);
+  const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
     fetch(`/api/page?number=${page}`, {
@@ -238,7 +249,7 @@ export default function Index(
                                 <div className="italic">
                                   {
                                     mapReferencedTypeToLabel[
-                                      referenced_tweet.type
+                                      referenced_tweet.type as keyof typeof mapReferencedTypeToLabel
                                     ]
                                   }
                                   :
