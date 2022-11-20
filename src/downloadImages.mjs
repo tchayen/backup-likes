@@ -17,7 +17,7 @@ async function downloadImage(url) {
     console.log(`  Downloading ${url}`);
 
     exec(
-      `curl -Ls --create-dirs -o ${targetPath}} ${url}`,
+      `curl -Ls --create-dirs -o ${targetPath} ${url}`,
       (error, stdout, stderr) => {
         if (error) {
           reject(error);
