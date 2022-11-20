@@ -216,11 +216,11 @@ export default function Index(
                                     }
                                     :
                                   </div>
-                                  <div className="flex gap-4 rounded bg-slate-900 p-4">
+                                  <div className="flex gap-3 rounded bg-slate-900 p-4">
                                     {referenced_tweet.author && (
                                       <Avatar user={referenced_tweet.author} />
                                     )}
-                                    <div className="flex flex-col gap-2">
+                                    <div className="flex flex-col">
                                       {referenced_tweet.author && (
                                         <TopBar
                                           user={referenced_tweet.author}
