@@ -1,15 +1,15 @@
-It's all WIP.
+Script for downloading Twitter likes with viewer app.
 
-Inspired by code from [Twitter API V2 Sample Code](https://github.com/twitterdev/Twitter-API-v2-sample-code).
+![Screenshot of the viewer app](screenshots/1.png)
 
 ## Install
 
-### Requirements
+### Set up Twitter Developer Account
 
 - Go to [Developer portal](https://developer.twitter.com/en/portal/projects/) and set up account if needed. Create a project etc. Generate access tokens. Copy all received tokens.
 - Install SQLite.
 
-Then run:
+### Download repository
 
 ```bash
 git clone git@github.com:tchayen/backup-likes.git
@@ -33,30 +33,13 @@ yarn dev
 # 3. Go to localhost:3000
 ```
 
-## Docs
-
-### `src/likes.mjs`
-
-Downloads all tweets liked by you to directory `likes/`. Likes will be divided into ~100 per file.
-
-Downloaded tweets can contain mentions, referenced tweets and attachments.
-
-### _CURRENTLY NOT USED_ `src/loadLikesToDb.mjs`
-
-_Run only once, it doesn't check for uniqueness._
-
-Loads likes to SQLite database. Creates users, referenced tweets and media too.
-
-### _CURRENTLY NOT USED_ `src/fetchUsersForTweets.mjs`
-
-Iterates `liked` table in DB, fetches author profiles, saves them to the DB.
-
 ## TODO
 
 - [x] Long username can make tweet overflow.
 - [x] Style replied and quoted tweets.
-- [ ] Resolve URLs in referenced tweets.
-- [ ] Images need some border, maybe.
+- [x] Resolve URLs in referenced tweets.
+- [x] Store resolved links locally, do it once.
 - [x] Make sure that referenced tweets have full width.
-- [ ] Store resolved links locally, do it once.
+- [ ] Images need some border, maybe.
 - [ ] Fetch images (avatars, attachments) locally.
+- [ ] Fetch videos locally.

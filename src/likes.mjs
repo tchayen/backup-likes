@@ -1,9 +1,8 @@
 import fetch from "node-fetch";
 import fs from "fs";
 import { exec } from "child_process";
-import { sleep } from "./utils.mjs";
 
-const saveTo = "likes_with_links";
+const saveTo = "likes";
 
 async function getUrl(url) {
   return new Promise((resolve, reject) =>
