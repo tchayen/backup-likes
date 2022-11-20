@@ -5,11 +5,13 @@ import { format } from "date-fns";
 
 const Avatar = ({ user }) => {
   return (
-    <img
-      className="h-12 w-12 rounded-full"
-      src={user.profile_image_url}
-      alt={`Avatar of ${user.name}`}
-    />
+    <div className="h-12 w-12 flex-shrink-0 rounded-full bg-slate-900">
+      <img
+        className="h-12 w-12 rounded-full"
+        src={user.profile_image_url}
+        alt={`Avatar of ${user.name}`}
+      />
+    </div>
   );
 };
 
@@ -101,12 +103,19 @@ const FormatTweet = ({ tweet }: { tweet: string }) => {
 function Pager({
   page,
   setPage,
+  setData,
   pageCount,
 }: {
   page: number;
   setPage: Dispatch<number>;
+  setData: Dispatch<any>;
   pageCount: number;
 }) {
+  const after = () => {
+    setData(null);
+    window.scrollTo(0, 0);
+  };
+
   return (
     <div className="flex items-center gap-4 p-4 text-white">
       <div>
@@ -117,7 +126,7 @@ function Pager({
         disabled={page === 0}
         onClick={() => {
           setPage(Math.max(page - 1, 0));
-          window.scrollTo(0, 0);
+          after();
         }}
         className="h-8 rounded bg-slate-800 px-2 font-bold"
       >
@@ -127,7 +136,7 @@ function Pager({
         disabled={page + 1 === pageCount}
         onClick={() => {
           setPage(Math.min(page + 1, pageCount - 1));
-          window.scrollTo(0, 0);
+          after();
         }}
         className="h-8 rounded bg-slate-800 px-2 font-bold"
       >
@@ -148,7 +157,7 @@ function Attachments({ attachments }: { attachments: any[] }) {
         if (attachment.type === "photo") {
           return (
             <img
-              className="overflow-hidden rounded"
+              className="overflow-hidden rounded-xl"
               src={attachment.url.replace("https://pbs.twimg.com/", "/assets/")}
               alt="Tweet attachment"
             />
@@ -174,7 +183,7 @@ export default function Index(
   props: Awaited<ReturnType<typeof getStaticProps>>["props"]
 ) {
   const pageCount = props.directory.length;
-  const [page, setPage] = useState(196);
+  const [page, setPage] = useState(180);
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -198,74 +207,73 @@ export default function Index(
   return (
     <div className="flex justify-center">
       <div className="flex w-600px flex-col">
-        <Pager page={page} setPage={setPage} pageCount={pageCount} />
+        <Pager
+          page={page}
+          setPage={setPage}
+          setData={setData}
+          pageCount={pageCount}
+        />
         <div className="flex flex-col divide-y divide-slate-800 border-l border-t border-b border-r border-slate-800">
           {data?.map((tweet) => {
             return (
               <div key={tweet.id} className="flex flex-col p-4 text-slate-400">
                 <div className="flex gap-3">
                   <Avatar user={tweet.user} />
-                  <div className="flex w-full flex-col gap-1">
+                  <div className="flex w-full flex-col gap-2">
                     <TopBar user={tweet.user} created_at={tweet.created_at} />
                     <FormatTweet tweet={tweet.text} />
-                    <div className="mt-4 flex flex-col gap-4">
-                      <Attachments attachments={tweet.attachments} />
-                      {tweet.referenced_tweets && (
-                        <div className="flex w-full flex-col gap-4">
-                          {tweet.referenced_tweets.map(
-                            (referenced_tweet: any) => {
-                              return (
-                                <div
-                                  key={referenced_tweet.id}
-                                  className="flex w-full flex-col gap-2"
-                                >
-                                  <div>
-                                    {
-                                      mapReferencedTypeToLabel[
-                                        referenced_tweet.type
-                                      ]
-                                    }
-                                    :
-                                  </div>
-                                  <div className="flex gap-3 rounded bg-slate-900 p-4">
+                    <Attachments attachments={tweet.attachments} />
+                    {tweet.referenced_tweets && (
+                      <div className="flex w-full flex-col gap-2">
+                        {tweet.referenced_tweets.map(
+                          (referenced_tweet: any) => {
+                            return (
+                              <div
+                                key={referenced_tweet.id}
+                                className="flex w-full flex-col gap-2"
+                              >
+                                <div>
+                                  {
+                                    mapReferencedTypeToLabel[
+                                      referenced_tweet.type
+                                    ]
+                                  }
+                                  :
+                                </div>
+                                <div className="flex gap-3 rounded-xl border border-slate-800 p-4">
+                                  {referenced_tweet.author && (
+                                    <Avatar user={referenced_tweet.author} />
+                                  )}
+                                  <div className="flex flex-col gap-1">
                                     {referenced_tweet.author && (
-                                      <Avatar user={referenced_tweet.author} />
-                                    )}
-                                    <div className="flex flex-col gap-1">
-                                      {referenced_tweet.author && (
-                                        <TopBar
-                                          user={referenced_tweet.author}
-                                          created_at={
-                                            referenced_tweet.created_at
-                                          }
-                                        />
-                                      )}
-                                      {referenced_tweet.text && (
-                                        <FormatTweet
-                                          tweet={referenced_tweet.text}
-                                        />
-                                      )}
-                                      <Attachments
-                                        attachments={
-                                          referenced_tweet.attachments
-                                        }
+                                      <TopBar
+                                        user={referenced_tweet.author}
+                                        created_at={referenced_tweet.created_at}
                                       />
-                                    </div>
+                                    )}
+                                    {referenced_tweet.text && (
+                                      <FormatTweet
+                                        tweet={referenced_tweet.text}
+                                      />
+                                    )}
+                                    <Attachments
+                                      attachments={referenced_tweet.attachments}
+                                    />
                                   </div>
                                 </div>
-                              );
-                            }
-                          )}
-                        </div>
-                      )}
-                      <div>
-                        <StyledLink
-                          href={`https://twitter.com/${tweet.user.username}/status/${tweet.id}`}
-                        >
-                          Go to tweet{" "}
-                          <span className="text-slate-500">-&gt;</span>
-                        </StyledLink>
+                              </div>
+                            );
+                          }
+                        )}
                       </div>
+                    )}
+                    <div>
+                      <StyledLink
+                        href={`https://twitter.com/${tweet.user.username}/status/${tweet.id}`}
+                      >
+                        Go to tweet{" "}
+                        <span className="text-slate-500">-&gt;</span>
+                      </StyledLink>
                     </div>
                   </div>
                 </div>
@@ -273,7 +281,12 @@ export default function Index(
             );
           })}
         </div>
-        <Pager page={page} setPage={setPage} pageCount={pageCount} />
+        <Pager
+          page={page}
+          setPage={setPage}
+          setData={setData}
+          pageCount={pageCount}
+        />
       </div>
     </div>
   );

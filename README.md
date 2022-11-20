@@ -1,4 +1,4 @@
-Script for downloading Twitter likes with viewer app.
+Script for downloading Twitter likes with viewer app. Includes optional script to download images locally.
 
 ![Screenshot of the viewer app](screenshots/1.png)
 
@@ -21,25 +21,28 @@ yarn
 
 Then fill the `.env` file with your information.
 
+### Install deps of viewer app
+
+```bash
+cd viewer
+yarn
+```
+
+### Fetch data
+
+```bash
+node src/likes.mjs # Download liked tweets.
+node src/downloadImages.mjs # Download images locally.
+```
+
 ## Run
 
 ```bash
-# 1. Download likes
-node src/likes.mjs
-# 2. Open viewer.
-cd viewer
-yarn
 yarn dev
-# 3. Go to localhost:3000
 ```
+
+Go to [localhost:3000](http://localhost:3000).
 
 ## TODO
 
-- [x] Long username can make tweet overflow.
-- [x] Style replied and quoted tweets.
-- [x] Resolve URLs in referenced tweets.
-- [x] Store resolved links locally, do it once.
-- [x] Make sure that referenced tweets have full width.
-- [x] Fetch images (avatars, attachments) locally.
-- [ ] Move `/assets` to `/viewer/public/assets`.
 - [ ] Fetch videos locally.
