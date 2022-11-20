@@ -29,11 +29,13 @@ export default async function handler(
         text: tweet.text,
         ...(tweet.attachments && tweet.attachments.media_keys
           ? {
-              attachments: tweet.attachments.media_keys.map((attachment) => {
-                return file.includes.media.find(
-                  (media) => media.media_key === attachment
-                );
-              }),
+              attachments: tweet.attachments.media_keys
+                .map((attachment) => {
+                  return file.includes.media.find(
+                    (media) => media.media_key === attachment
+                  );
+                })
+                .filter(Boolean),
             }
           : {}),
         ...(tweet.referenced_tweets
@@ -52,7 +54,23 @@ export default async function handler(
                     (user) => user.id === referenced.author_id
                   );
 
-                  return { ...referenced, author, type: referenced_tweet.type };
+                  const attachments =
+                    referenced.attachments && referenced.attachments.media_keys
+                      ? referenced.attachments.media_keys
+                          .map((attachment) => {
+                            return file.includes.media.find(
+                              (media) => media.media_key === attachment
+                            );
+                          })
+                          .filter(Boolean)
+                      : [];
+
+                  return {
+                    ...referenced,
+                    author,
+                    type: referenced_tweet.type,
+                    ...(attachments.length > 0 ? { attachments } : {}),
+                  };
                 }
               ),
             }

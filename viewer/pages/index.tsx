@@ -134,6 +134,28 @@ function Pager({
   );
 }
 
+function Attachments({ attachments }: { attachments: any[] }) {
+  if (!Array.isArray(attachments)) {
+    return null;
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {attachments.map((attachment: any) => {
+        if (attachment.type === "photo") {
+          return (
+            <img
+              className="overflow-hidden rounded"
+              src={attachment.url}
+              alt="Tweet attachment"
+            />
+          );
+        }
+      })}
+    </div>
+  );
+}
+
 export const getStaticProps = async () => {
   const directory = await sortedByDate();
 
@@ -184,21 +206,7 @@ export default function Index(
                     <TopBar user={tweet.user} created_at={tweet.created_at} />
                     <FormatTweet tweet={tweet.text} />
                     <div className="mt-4 flex flex-col gap-4">
-                      {tweet.attachments && (
-                        <div className="flex flex-col gap-4">
-                          {tweet.attachments.map((attachment: any) => {
-                            if (attachment.type === "photo") {
-                              return (
-                                <img
-                                  className="overflow-hidden rounded"
-                                  src={attachment.url}
-                                  alt="Tweet attachment"
-                                />
-                              );
-                            }
-                          })}
-                        </div>
-                      )}
+                      <Attachments attachments={tweet.attachments} />
                       {tweet.referenced_tweets && (
                         <div className="flex w-full flex-col gap-4">
                           {tweet.referenced_tweets.map(
@@ -234,6 +242,11 @@ export default function Index(
                                           tweet={referenced_tweet.text}
                                         />
                                       )}
+                                      <Attachments
+                                        attachments={
+                                          referenced_tweet.attachments
+                                        }
+                                      />
                                     </div>
                                   </div>
                                 </div>
