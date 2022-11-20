@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import { sortedByDate } from "@/utils/sortedByDate";
+import { File, Media, ReferencedTweet, Tweet, User } from "@/types";
 
 type Data = any;
 
@@ -18,21 +19,21 @@ export default async function handler(
 
   const directory = await sortedByDate();
 
-  const file = JSON.parse(
+  const file: File = JSON.parse(
     await fs.promises.readFile(`../likes/${directory[Number(number)]}`, "utf-8")
   );
 
   const tweets = await Promise.all(
-    file.data.map(async (tweet) => {
+    file.data.map(async (tweet: Tweet) => {
       return {
         id: tweet.id,
         text: tweet.text,
         ...(tweet.attachments && tweet.attachments.media_keys
           ? {
               attachments: tweet.attachments.media_keys
-                .map((attachment) => {
+                .map((id: string) => {
                   return file.includes.media.find(
-                    (media) => media.media_key === attachment
+                    (media: Media) => media.media_key === id
                   );
                 })
                 .filter(Boolean),
@@ -41,9 +42,9 @@ export default async function handler(
         ...(tweet.referenced_tweets
           ? {
               referenced_tweets: tweet.referenced_tweets.map(
-                (referenced_tweet) => {
+                (referenced_tweet: ReferencedTweet) => {
                   const referenced = file.includes.tweets.find(
-                    (tweet) => tweet.id === referenced_tweet.id
+                    (tweet: Tweet) => tweet.id === referenced_tweet.id
                   );
 
                   if (!referenced) {
@@ -51,15 +52,15 @@ export default async function handler(
                   }
 
                   const author = file.includes.users.find(
-                    (user) => user.id === referenced.author_id
+                    (user: User) => user.id === referenced.author_id
                   );
 
                   const attachments =
                     referenced.attachments && referenced.attachments.media_keys
                       ? referenced.attachments.media_keys
-                          .map((attachment) => {
+                          .map((id: string) => {
                             return file.includes.media.find(
-                              (media) => media.media_key === attachment
+                              (media: Media) => media.media_key === id
                             );
                           })
                           .filter(Boolean)
@@ -67,7 +68,7 @@ export default async function handler(
 
                   return {
                     ...referenced,
-                    author,
+                    user: author,
                     type: referenced_tweet.type,
                     ...(attachments.length > 0 ? { attachments } : {}),
                   };
@@ -75,7 +76,9 @@ export default async function handler(
               ),
             }
           : {}),
-        user: file.includes.users.find((user) => user.id === tweet.author_id),
+        user: file.includes.users.find(
+          (user: User) => user.id === tweet.author_id
+        ),
         created_at: tweet.created_at,
       };
     })

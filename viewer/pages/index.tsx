@@ -2,16 +2,7 @@ import { sortedByDate } from "@/utils/sortedByDate";
 import Link from "next/link";
 import { Dispatch, ReactNode, useEffect, useState } from "react";
 import { format } from "date-fns";
-
-type User = {
-  name: string;
-  username: string;
-  id: string;
-  created_at: string;
-  profile_image_url: string;
-  location: string;
-  description: string;
-};
+import { Media, ReferencedTweet, Tweet, User } from "@/types";
 
 const Avatar = ({ user }: { user: User }) => {
   return (
@@ -159,7 +150,7 @@ function Pager({
   );
 }
 
-function Attachments({ attachments }: { attachments: any[] }) {
+function Attachments({ attachments }: { attachments: Media[] }) {
   if (!Array.isArray(attachments)) {
     return null;
   }
@@ -240,7 +231,13 @@ export default function Index(
                     {tweet.referenced_tweets && (
                       <div className="flex w-full flex-col gap-2">
                         {tweet.referenced_tweets.map(
-                          (referenced_tweet: any) => {
+                          (
+                            referenced_tweet: Tweet &
+                              ReferencedTweet & {
+                                user: User;
+                                attachments: Media[];
+                              }
+                          ) => {
                             return (
                               <div
                                 key={referenced_tweet.id}
@@ -255,13 +252,13 @@ export default function Index(
                                   :
                                 </div>
                                 <div className="flex gap-3 rounded-xl border border-slate-800 p-4">
-                                  {referenced_tweet.author && (
-                                    <Avatar user={referenced_tweet.author} />
+                                  {referenced_tweet.user && (
+                                    <Avatar user={referenced_tweet.user} />
                                   )}
                                   <div className="flex flex-col gap-1">
-                                    {referenced_tweet.author && (
+                                    {referenced_tweet.user && (
                                       <TopBar
-                                        user={referenced_tweet.author}
+                                        user={referenced_tweet.user}
                                         created_at={referenced_tweet.created_at}
                                       />
                                     )}
