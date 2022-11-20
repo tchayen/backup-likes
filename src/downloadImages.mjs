@@ -45,5 +45,9 @@ async function downloadImage(url) {
         await downloadImage(media.preview_image_url);
       }
     }
+
+    for await (const user of json.includes.users) {
+      await downloadImage(user.profile_image_url);
+    }
   }
 })();

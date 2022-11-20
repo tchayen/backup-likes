@@ -8,7 +8,10 @@ const Avatar = ({ user }) => {
     <div className="h-12 w-12 flex-shrink-0 rounded-full bg-slate-900">
       <img
         className="h-12 w-12 rounded-full"
-        src={user.profile_image_url}
+        src={user.profile_image_url.replace(
+          "https://pbs.twimg.com/",
+          "/assets/"
+        )}
         alt={`Avatar of ${user.name}`}
       />
     </div>
@@ -232,7 +235,7 @@ export default function Index(
                                 key={referenced_tweet.id}
                                 className="flex w-full flex-col gap-2"
                               >
-                                <div>
+                                <div className="italic">
                                   {
                                     mapReferencedTypeToLabel[
                                       referenced_tweet.type
