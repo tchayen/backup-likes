@@ -15,7 +15,7 @@ const Avatar = ({ user }) => {
 
 const TopBar = ({ user, created_at }) => {
   return (
-    <div className="flex gap-1">
+    <div className="flex flex-wrap gap-1" style={{ width: 400 }}>
       <div className="overflow-hidden text-ellipsis whitespace-nowrap font-bold text-white">
         {user.name}
       </div>
@@ -29,7 +29,10 @@ const TopBar = ({ user, created_at }) => {
           @{user.username}
         </Link>
       </div>
-      ·<div>{format(new Date(created_at), "do MMM yyyy")}</div>
+      ·
+      <div className="whitespace-nowrap">
+        {format(new Date(created_at), "do MMM yyyy")}
+      </div>
     </div>
   );
 };
@@ -146,7 +149,7 @@ function Attachments({ attachments }: { attachments: any[] }) {
           return (
             <img
               className="overflow-hidden rounded"
-              src={attachment.url}
+              src={attachment.url.replace("https://pbs.twimg.com/", "/assets/")}
               alt="Tweet attachment"
             />
           );
@@ -171,7 +174,7 @@ export default function Index(
   props: Awaited<ReturnType<typeof getStaticProps>>["props"]
 ) {
   const pageCount = props.directory.length;
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(196);
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -202,7 +205,7 @@ export default function Index(
               <div key={tweet.id} className="flex flex-col p-4 text-slate-400">
                 <div className="flex gap-3">
                   <Avatar user={tweet.user} />
-                  <div className="flex w-full flex-col">
+                  <div className="flex w-full flex-col gap-1">
                     <TopBar user={tweet.user} created_at={tweet.created_at} />
                     <FormatTweet tweet={tweet.text} />
                     <div className="mt-4 flex flex-col gap-4">
@@ -228,7 +231,7 @@ export default function Index(
                                     {referenced_tweet.author && (
                                       <Avatar user={referenced_tweet.author} />
                                     )}
-                                    <div className="flex flex-col">
+                                    <div className="flex flex-col gap-1">
                                       {referenced_tweet.author && (
                                         <TopBar
                                           user={referenced_tweet.author}

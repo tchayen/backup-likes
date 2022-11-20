@@ -1,15 +1,23 @@
 import fs from "fs";
+import { exec } from "child_process";
 
 const savedTo = "likes";
+const saveTo = "viewer/public/assets";
 
 async function downloadImage(url) {
-  return new Promise((resolve, reject) =>
-    // TODO: recreate original path of directories to make it easier to replace URLs and avoid duplicates.
+  return new Promise((resolve, reject) => {
+    const targetPath = `${saveTo}/${url.replace("https://pbs.twimg.com/", "")}`;
+
+    try {
+      fs.accessSync(targetPath);
+      resolve();
+      return;
+    } catch {}
+
+    console.log(`  Downloading ${url}`);
+
     exec(
-      `curl
-        -Ls
-        -o ${savedTo}/${url.split("/").pop()}
-        ${url}`,
+      `curl -Ls --create-dirs -o ${targetPath}} ${url}`,
       (error, stdout, stderr) => {
         if (error) {
           reject(error);
@@ -17,22 +25,24 @@ async function downloadImage(url) {
           resolve();
         }
       }
-    )
-  );
+    );
+  });
 }
 
 (async () => {
   const directory = fs.readdirSync(savedTo);
   for await (const file of directory) {
+    console.log(`Processing file ${file}`);
+
     const content = fs.readFileSync(`${savedTo}/${file}`, "utf8");
     const json = JSON.parse(content);
-    for await (const tweet of json.data) {
-      const mediaLinks = tweet.text
-        .matchAll(/(https:\/\/pbs.twimg.com\/media[^\s]+)/g)
-        .map((m) => m[0]);
+    for await (const media of json.includes.media) {
+      if (media.url) {
+        await downloadImage(media.url);
+      }
 
-      for await (const link of mediaLinks) {
-        await downloadImage(link);
+      if (media.preview_image_url) {
+        await downloadImage(media.preview_image_url);
       }
     }
   }

@@ -40,6 +40,6 @@ yarn dev
 - [x] Resolve URLs in referenced tweets.
 - [x] Store resolved links locally, do it once.
 - [x] Make sure that referenced tweets have full width.
-- [ ] Images need some border, maybe.
-- [ ] Fetch images (avatars, attachments) locally.
+- [x] Fetch images (avatars, attachments) locally.
+- [ ] Move `/assets` to `/viewer/public/assets`.
 - [ ] Fetch videos locally.
