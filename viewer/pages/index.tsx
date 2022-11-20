@@ -15,7 +15,7 @@ const Avatar = ({ user }) => {
 
 const TopBar = ({ user, created_at }) => {
   return (
-    <div className="flex gap-1 break-keep">
+    <div className="flex gap-1">
       <div className="text-white font-bold whitespace-nowrap text-ellipsis overflow-hidden">
         {user.name}
       </div>
@@ -24,6 +24,7 @@ const TopBar = ({ user, created_at }) => {
           target="_blank"
           rel="noreferrer"
           href={`https://twitter.com/${user.username}`}
+          className="rounded decoration-2 underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-sky-500 decoration-slate-600"
         >
           @{user.username}
         </Link>
@@ -45,7 +46,7 @@ const StyledLink = ({
       target="_blank"
       rel="noreferrer"
       href={href}
-      className="rounded text-slate-100 decoration-slate-300 decoration-2 underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-sky-500 dark:decoration-slate-600"
+      className="rounded text-slate-100 decoration-2 underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-sky-500 decoration-slate-600"
     >
       {children}
     </Link>
@@ -59,7 +60,7 @@ const FormatTweet = ({ tweet }: { tweet: string }) => {
     .replace(/(^|\s)#(\w+)/g, "$1§#$2§");
 
   return (
-    <div>
+    <div className="break-words break-all">
       {split.split("§").map((part, i) => {
         if (part.startsWith("http")) {
           return (
@@ -179,7 +180,7 @@ export default function Index(
                         </div>
                       )}
                       {tweet.referenced_tweets && (
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-4 w-full">
                           {tweet.referenced_tweets.map((referenced_tweet) => {
                             return (
                               <div
