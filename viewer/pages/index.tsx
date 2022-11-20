@@ -132,23 +132,23 @@ export default function Index(
   };
 
   return (
-    <div className="flex justify-center bg-black">
+    <div className="flex justify-center">
       <div className="flex flex-col w-600px">
         <div className="flex items-center gap-4 p-4 text-white border-l border-r border-slate-800">
           <div>
-            Current page: <strong>{page}</strong> Total pages:{" "}
-          </div>
-          <div>
+            Current page: <strong>{page + 1}</strong> Total pages:{" "}
             <strong>{pageCount}</strong>
           </div>
           <button
-            onClick={() => setPage(page - 1)}
+            disabled={page === 0}
+            onClick={() => setPage(Math.max(page - 1, 0))}
             className="bg-slate-800 font-bold rounded px-2 h-8"
           >
             Previous
           </button>
           <button
-            onClick={() => setPage(page + 1)}
+            disabled={page + 1 === pageCount}
+            onClick={() => setPage(Math.min(page + 1, pageCount - 1))}
             className="bg-slate-800 font-bold rounded px-2 h-8"
           >
             Next

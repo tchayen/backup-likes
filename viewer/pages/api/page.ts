@@ -2,18 +2,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import { sortedByDate } from "@/utils/sortedByDate";
-import { exec } from "child_process";
-
-async function getUrl(url: string) {
-  return new Promise((resolve, reject) =>
-    exec(
-      `curl -Ls -o /dev/null -w %{url_effective} ${url}`,
-      (error, stdout, stderr) => {
-        resolve(stdout);
-      }
-    )
-  );
-}
 
 type Data = any;
 
@@ -36,26 +24,9 @@ export default async function handler(
 
   const tweets = await Promise.all(
     file.data.map(async (tweet) => {
-      const urlsInText = [...tweet.text.matchAll(/(https?:\/\/[^\s]+)/g)].map(
-        (m) => m[0]
-      );
-
-      const resolvedUrls = await Promise.all(
-        urlsInText.map((url) => getUrl(url))
-      );
-
-      const mapping = {};
-      for (let i = 0; i < urlsInText.length; i++) {
-        mapping[urlsInText[i]] = resolvedUrls[i];
-      }
-
-      const replacedText = tweet.text.replace(/(https?:\/\/[^\s]+)/g, (url) => {
-        return mapping[url];
-      });
-
       return {
         id: tweet.id,
-        text: replacedText,
+        text: tweet.text,
         ...(tweet.attachments && tweet.attachments.media_keys
           ? {
               attachments: tweet.attachments.media_keys.map((attachment) => {
