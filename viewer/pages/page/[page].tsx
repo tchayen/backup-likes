@@ -1,194 +1,49 @@
 import { sortedByDate } from "@/utils/sortedByDate";
-import Link from "next/link";
-import { Dispatch, ReactNode, useEffect, useState } from "react";
-import { format } from "date-fns";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { Media, ReferencedTweet, Tweet, User } from "@/types";
+import { Attachments } from "@/components/Attachments";
+import { Pager } from "@/components/Pager";
+import { Avatar } from "@/components/Avatar";
+import { TopBar } from "@/components/TopBar";
+import { StyledLink } from "@/components/StyledLink";
+import { FormattedTweet } from "@/components/FormattedTweet";
 
-const Avatar = ({ user }: { user: User }) => {
-  return (
-    <div className="h-12 w-12 flex-shrink-0 rounded-full bg-slate-900">
-      <img
-        className="h-12 w-12 rounded-full"
-        src={user.profile_image_url.replace(
-          "https://pbs.twimg.com/",
-          "/assets/"
-        )}
-        alt={`Avatar of ${user.name}`}
-      />
-    </div>
-  );
-};
-
-const TopBar = ({ user, created_at }: { user: User; created_at: string }) => {
-  return (
-    <div className="flex flex-wrap gap-1" style={{ width: 400 }}>
-      <div className="overflow-hidden text-ellipsis whitespace-nowrap font-bold text-white">
-        {user.name}
-      </div>
-      <div>
-        <Link
-          target="_blank"
-          rel="noreferrer"
-          href={`https://twitter.com/${user.username}`}
-          className="rounded decoration-slate-600 decoration-2 underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-sky-500"
-        >
-          @{user.username}
-        </Link>
-      </div>
-      ·
-      <div className="whitespace-nowrap">
-        {format(new Date(created_at), "do MMM yyyy")}
-      </div>
-    </div>
-  );
-};
-
-const StyledLink = ({
-  href,
-  children,
+export const getStaticProps = async ({
+  params,
 }: {
-  href: string;
-  children: ReactNode;
+  params: { page: string };
 }) => {
-  return (
-    <Link
-      target="_blank"
-      rel="noreferrer"
-      href={href}
-      className="break-words break-all rounded text-slate-100 decoration-slate-600 decoration-2 underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-sky-500"
-    >
-      {children}
-    </Link>
-  );
-};
-
-const FormatTweet = ({ tweet }: { tweet: string }) => {
-  const split = tweet
-    .replace(/(https?:\/\/[^\s]+)/g, "§$1§")
-    .replace(/(^|\s)@(\w+)/g, "$1§@$2§")
-    .replace(/(^|\s)#(\w+)/g, "$1§#$2§");
-
-  return (
-    <div>
-      {split.split("§").map((part, i) => {
-        if (part.startsWith("http")) {
-          return (
-            <StyledLink key={i} href={part}>
-              {part}
-            </StyledLink>
-          );
-        }
-
-        if (part.startsWith("@")) {
-          return (
-            <StyledLink key={i} href={`https://twitter.com/${part.slice(1)}`}>
-              {part}
-            </StyledLink>
-          );
-        }
-
-        if (part.startsWith("#")) {
-          return (
-            <StyledLink
-              key={i}
-              href={`https://twitter.com/hashtag/${part.slice(1)}`}
-            >
-              {part}
-            </StyledLink>
-          );
-        }
-
-        return <span key={i} dangerouslySetInnerHTML={{ __html: part }} />;
-      })}
-    </div>
-  );
-};
-
-function Pager({
-  page,
-  setPage,
-  setData,
-  pageCount,
-}: {
-  page: number;
-  setPage: Dispatch<number>;
-  setData: Dispatch<any[]>;
-  pageCount: number;
-}) {
-  const after = () => {
-    setData([]);
-    window.scrollTo(0, 0);
-  };
-
-  return (
-    <div className="flex items-center gap-4 p-4 text-white">
-      <div>
-        Current page: <strong>{page + 1}</strong> Total pages:{" "}
-        <strong>{pageCount}</strong>
-      </div>
-      <button
-        disabled={page === 0}
-        onClick={() => {
-          setPage(Math.max(page - 1, 0));
-          after();
-        }}
-        className="h-8 rounded bg-slate-800 px-2 font-bold"
-      >
-        Previous
-      </button>
-      <button
-        disabled={page + 1 === pageCount}
-        onClick={() => {
-          setPage(Math.min(page + 1, pageCount - 1));
-          after();
-        }}
-        className="h-8 rounded bg-slate-800 px-2 font-bold"
-      >
-        Next
-      </button>
-    </div>
-  );
-}
-
-function Attachments({ attachments }: { attachments: Media[] }) {
-  if (!Array.isArray(attachments)) {
-    return null;
-  }
-
-  return (
-    <div className="flex flex-col gap-4">
-      {attachments.map((attachment: any) => {
-        if (attachment.type === "photo") {
-          return (
-            <img
-              key={attachment.media_key}
-              className="overflow-hidden rounded-xl"
-              src={attachment.url.replace("https://pbs.twimg.com/", "/assets/")}
-              alt="Tweet attachment"
-            />
-          );
-        }
-      })}
-    </div>
-  );
-}
-
-export const getStaticProps = async () => {
   const directory = await sortedByDate();
 
   return {
     props: {
       directory,
+      page: params.page,
     },
   };
 };
 
-// Read and set page in the URL bar.
+export const getStaticPaths = async () => {
+  const directory = await sortedByDate();
+
+  return {
+    paths: directory.map((_, i) => ({
+      params: {
+        page: `${i + 1}`,
+      },
+    })),
+    fallback: false,
+  };
+};
+
 export default function Index(
   props: Awaited<ReturnType<typeof getStaticProps>>["props"]
 ) {
+  const router = useRouter();
+
   const pageCount = props.directory.length;
-  const [page, setPage] = useState<number>(180);
+  const [page, setPage] = useState<number>(Number(props.page) - 1);
   const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
@@ -204,6 +59,25 @@ export default function Index(
       });
   }, [page]);
 
+  useEffect(() => {
+    router.events.on("routeChangeStart", (url) => {
+      const page = url.split("/").pop();
+
+      fetch(`/api/page?number=${page}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setData(data);
+        });
+    });
+    // Following: https://nextjs.org/docs/api-reference/next/router#usage-6
+    // eslint-disable-next-line
+  }, []);
+
   const mapReferencedTypeToLabel = {
     replied_to: "Replied to",
     quoted: "Quoted",
@@ -217,6 +91,7 @@ export default function Index(
           setPage={setPage}
           setData={setData}
           pageCount={pageCount}
+          router={router}
         />
         <div className="flex flex-col divide-y divide-slate-800 border-l border-t border-b border-r border-slate-800">
           {data?.map((tweet) => {
@@ -226,7 +101,7 @@ export default function Index(
                   <Avatar user={tweet.user} />
                   <div className="flex w-full flex-col gap-2">
                     <TopBar user={tweet.user} created_at={tweet.created_at} />
-                    <FormatTweet tweet={tweet.text} />
+                    <FormattedTweet tweet={tweet.text} />
                     <Attachments attachments={tweet.attachments} />
                     {tweet.referenced_tweets && (
                       <div className="flex w-full flex-col gap-2">
@@ -263,7 +138,7 @@ export default function Index(
                                       />
                                     )}
                                     {referenced_tweet.text && (
-                                      <FormatTweet
+                                      <FormattedTweet
                                         tweet={referenced_tweet.text}
                                       />
                                     )}
@@ -297,6 +172,7 @@ export default function Index(
           setPage={setPage}
           setData={setData}
           pageCount={pageCount}
+          router={router}
         />
       </div>
     </div>
