@@ -46,7 +46,7 @@ const StyledLink = ({
       target="_blank"
       rel="noreferrer"
       href={href}
-      className="rounded text-slate-100 decoration-2 underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-sky-500 decoration-slate-600"
+      className="break-words break-all rounded text-slate-100 decoration-2 underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-sky-500 decoration-slate-600"
     >
       {children}
     </Link>
@@ -60,7 +60,7 @@ const FormatTweet = ({ tweet }: { tweet: string }) => {
     .replace(/(^|\s)#(\w+)/g, "$1§#$2§");
 
   return (
-    <div className="break-words break-all">
+    <div>
       {split.split("§").map((part, i) => {
         if (part.startsWith("http")) {
           return (
