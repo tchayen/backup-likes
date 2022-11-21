@@ -218,16 +218,22 @@ async function processVideo(inputFile, outputFile) {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+function ifFileExists(filename) {
+  try {
+    fs.accessSync(filename);
+    console.log(`${filename} already exists, skipping.`);
+    return true;
+  } catch {}
+  return false;
+}
+
 async function downloadVideoFromTweet(tweetId, media_key) {
   const tsFilePath = `./videos/${media_key}.ts`;
   const mp4FilePath = `./viewer/public/videos/${media_key}.mp4`;
 
-  // Skip already processed files.
-  try {
-    fs.accessSync(mp4FilePath);
-    console.log(`${mp4FilePath} already exists, skipping.`);
+  if (ifFileExists(mp4FilePath)) {
     return;
-  } catch {}
+  }
 
   const response = await getTweetVideoConfig(tweetId);
 
@@ -286,6 +292,50 @@ async function downloadVideoFromTweet(tweetId, media_key) {
   await processVideo(tsFilePath, mp4FilePath);
 }
 
+async function downloadGif(gifFilePath, url) {
+  if (ifFileExists(gifFilePath)) {
+    return;
+  }
+
+  const request = await fetch(url);
+  const response = await request.arrayBuffer();
+
+  fs.writeFileSync(
+    gifFilePath,
+    Buffer.from(response, "binary"),
+    "binary",
+    (error) => {
+      if (error) {
+        console.error(error);
+      }
+    }
+  );
+}
+
+async function downloadGifFromTweet(tweetId, media_key) {
+  const gifFilePath = `./viewer/public/videos/${media_key}.mp4`;
+
+  if (ifFileExists(gifFilePath)) {
+    return;
+  }
+
+  const response = await getTweetVideoConfig(tweetId);
+
+  if (Array.isArray(response.errors)) {
+    console.error(response.errors);
+
+    if (response.errors[0].message === "Rate limit exceeded") {
+      console.log("Rate limit exceeded, waiting 1 minute.");
+      await sleep(60 * 1000);
+      return downloadVideoFromTweet(tweetId, media_key);
+    }
+
+    return;
+  }
+
+  await downloadGif(gifFilePath, response.track.playbackUrl);
+}
+
 (async () => {
   const directory = fs.readdirSync(savedTo);
 
@@ -295,17 +345,28 @@ async function downloadVideoFromTweet(tweetId, media_key) {
     const content = fs.readFileSync(`${savedTo}/${file}`, "utf8");
     const json = JSON.parse(content);
     for await (const media of json.includes.media) {
-      if (media.type === "video") {
-        const tweet = [...json.data, ...json.includes.tweets].find((tweet) => {
-          if (!tweet.attachments || !tweet.attachments.media_keys) {
-            return;
-          }
-          return tweet.attachments.media_keys.includes(media.media_key);
-        });
+      if (!["video", "animated_gif"].includes(media.type)) {
+        continue;
+      }
 
-        if (tweet) {
-          await downloadVideoFromTweet(tweet.id, media.media_key);
+      const tweet = [...json.data, ...json.includes.tweets].find((tweet) => {
+        if (!tweet.attachments || !tweet.attachments.media_keys) {
+          return;
         }
+        return tweet.attachments.media_keys.includes(media.media_key);
+      });
+
+      if (!tweet) {
+        console.error(`Could not find tweet for media ${media.media_key}`);
+        continue;
+      }
+
+      if (media.type === "video") {
+        await downloadVideoFromTweet(tweet.id, media.media_key);
+      }
+
+      if (media.type === "animated_gif") {
+        await downloadGifFromTweet(tweet.id, media.media_key);
       }
     }
   }

@@ -58,4 +58,5 @@ Go to [localhost:3000](http://localhost:3000).
 ## TODO
 
 - [x] Fetch videos locally.
+- [ ] Fetch GIFs.
 - [ ] Find a way to seemlessly fetch new liked tweets without redownloading the whole archive (might require some normalization of tweets, maybe in the end storing them in a local SQLite database).

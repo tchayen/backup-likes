@@ -33,6 +33,22 @@ export function Attachments({ attachments }: { attachments: Media[] }) {
             />
           );
         }
+
+        if (attachment.type === "animated_gif") {
+          return (
+            <div className="text-4xl text-red-400">
+              GIF goes here
+              <video
+                key={attachment.media_key}
+                className="overflow-hidden rounded-xl"
+                src={`/videos/${attachment.media_key}.mp4`}
+                autoPlay
+                loop
+                muted
+              />
+            </div>
+          );
+        }
       })}
     </div>
   );
