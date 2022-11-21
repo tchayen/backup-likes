@@ -144,7 +144,7 @@ async function getTweetVideoConfig(tweetId) {
 
 async function getPlaylistsM3u8(url) {
   if (mock) {
-    return parseM3u8(mockPlaylists);
+    return mockPlaylists;
   } else {
     const request = await fetch(url, {
       headers: {
@@ -155,25 +155,25 @@ async function getPlaylistsM3u8(url) {
     });
     const response = await request.text();
     console.log(url, response);
-    return parseM3u8(response);
+    return response;
   }
 }
 
 async function getSinglePlaylistM3u8(videoHost, uri) {
   if (mock) {
-    return parseM3u8(mockSinglePlaylist);
+    return mockSinglePlaylist;
   } else {
     const playlistUrl = `${videoHost}${uri}`;
-    const playlistRequest = await fetch(playlistUrl, {
+    const request = await fetch(playlistUrl, {
       headers: {
         headers: {
           authorization: `Bearer ${bearerToken}`,
         },
       },
     });
-    const playlistResponse = await playlistRequest.text();
-    console.log(playlistUrl, playlistResponse);
-    return parseM3u8(playlistResponse);
+    const response = await request.text();
+    console.log(playlistUrl, response);
+    return response;
   }
 }
 
@@ -245,18 +245,30 @@ async function downloadVideoFromTweet(tweetId, media_key) {
 
   const m3u8Url = response.track.playbackUrl;
   const videoHost = new URL(m3u8Url).origin;
+  const playlist = await getPlaylistsM3u8(m3u8Url);
 
-  const manifest = await getPlaylistsM3u8(m3u8Url);
+  if (playlist.startsWith('{"error_code"')) {
+    console.error(playlist);
+    return;
+  }
+
+  const manifest = parseM3u8(playlist);
 
   // I download only biggest available size.
   const biggest = manifest.playlists.sort(
     (a, b) => b.attributes.BANDWIDTH - a.attributes.BANDWIDTH
   )[0];
 
-  const playlist = await getSinglePlaylistM3u8(videoHost, biggest.uri);
+  const singlePlaylist = await getSinglePlaylistM3u8(videoHost, biggest.uri);
+  if (singlePlaylist.startsWith('{"error_code"')) {
+    console.error(playlist);
+    return;
+  }
+
+  const singlePlaylistManifest = parseM3u8(singlePlaylist);
 
   try {
-    for await (const segment of playlist.segments) {
+    for await (const segment of singlePlaylistManifest.segments) {
       const tsUrl = `${videoHost}${segment.uri}`;
       console.log(`Downloading ${tsUrl}`);
       const ts = await getTsFile(tsUrl);

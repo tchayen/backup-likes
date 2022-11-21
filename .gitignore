@@ -5,3 +5,4 @@ node_modules/
 database.db
 viewer/public/images/
 viewer/public/videos/
+videos/
