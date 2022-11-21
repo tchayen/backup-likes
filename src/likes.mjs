@@ -1,6 +1,9 @@
+import * as dotenv from "dotenv";
 import fetch from "node-fetch";
 import fs from "fs";
 import { exec } from "child_process";
+
+dotenv.config();
 
 const saveTo = "likes";
 
