@@ -24,6 +24,10 @@ export function Attachments({ attachments }: { attachments: Media[] }) {
             <video
               key={attachment.media_key}
               className="overflow-hidden rounded-xl"
+              poster={attachment.preview_image_url.replace(
+                "https://pbs.twimg.com/",
+                "/images/"
+              )}
               src={`/videos/${attachment.media_key}.mp4`}
               controls
             />
