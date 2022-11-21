@@ -229,7 +229,7 @@ function ifFileExists(filename) {
   return false;
 }
 
-async function downloadPlaylist(playbackUrl, tsFilePath) {
+async function downloadPlaylist(playbackUrl, tsFilePath, mp4FilePath) {
   const videoHost = new URL(playbackUrl).origin;
   const playlist = await getPlaylistsM3u8(playbackUrl);
 
@@ -305,8 +305,8 @@ async function downloadVideoFromTweet(tweetId, media_key) {
     console.error(response.errors);
 
     if (response.errors[0].message === "Rate limit exceeded") {
-      console.log("Rate limit exceeded, waiting 1 minute.");
-      await sleep(60 * 1000);
+      console.log("Rate limit exceeded, waiting 5 minutes.");
+      await sleep(5 * 60 * 1000);
       return downloadVideoFromTweet(tweetId, media_key);
     }
 
@@ -315,7 +315,7 @@ async function downloadVideoFromTweet(tweetId, media_key) {
 
   if (response.track.playbackUrl.split(".").pop() === "m3u8") {
     const tsFilePath = `./${saveTs}/${media_key}.ts`;
-    await downloadPlaylist(response.track.playbackUrl, tsFilePath);
+    await downloadPlaylist(response.track.playbackUrl, tsFilePath, mp4FilePath);
   } else {
     await downloadMp4(mp4FilePath, response.track.playbackUrl);
   }
