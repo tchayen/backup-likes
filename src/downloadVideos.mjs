@@ -229,31 +229,9 @@ function ifFileExists(filename) {
   return false;
 }
 
-async function downloadVideoFromTweet(tweetId, media_key) {
-  const tsFilePath = `./${saveTs}/${media_key}.ts`;
-  const mp4FilePath = `./${saveTo}/${media_key}.mp4`;
-
-  if (ifFileExists(mp4FilePath)) {
-    return;
-  }
-
-  const response = await getTweetVideoConfig(tweetId);
-
-  if (Array.isArray(response.errors)) {
-    console.error(response.errors);
-
-    if (response.errors[0].message === "Rate limit exceeded") {
-      console.log("Rate limit exceeded, waiting 1 minute.");
-      await sleep(60 * 1000);
-      return downloadVideoFromTweet(tweetId, media_key);
-    }
-
-    return;
-  }
-
-  const m3u8Url = response.track.playbackUrl;
-  const videoHost = new URL(m3u8Url).origin;
-  const playlist = await getPlaylistsM3u8(m3u8Url);
+async function downloadPlaylist(playbackUrl, tsFilePath) {
+  const videoHost = new URL(playbackUrl).origin;
+  const playlist = await getPlaylistsM3u8(playbackUrl);
 
   if (playlist.startsWith('{"error_code"')) {
     console.error(playlist);
@@ -294,7 +272,7 @@ async function downloadVideoFromTweet(tweetId, media_key) {
   await processVideo(tsFilePath, mp4FilePath);
 }
 
-async function downloadGif(gifFilePath, url) {
+async function downloadMp4(gifFilePath, url) {
   if (ifFileExists(gifFilePath)) {
     return;
   }
@@ -314,10 +292,10 @@ async function downloadGif(gifFilePath, url) {
   );
 }
 
-async function downloadGifFromTweet(tweetId, media_key) {
-  const gifFilePath = `./viewer/public/videos/${media_key}.mp4`;
+async function downloadVideoFromTweet(tweetId, media_key) {
+  const mp4FilePath = `./${saveTo}/${media_key}.mp4`;
 
-  if (ifFileExists(gifFilePath)) {
+  if (ifFileExists(mp4FilePath)) {
     return;
   }
 
@@ -335,7 +313,12 @@ async function downloadGifFromTweet(tweetId, media_key) {
     return;
   }
 
-  await downloadGif(gifFilePath, response.track.playbackUrl);
+  if (response.track.playbackUrl.split(".").pop() === "m3u8") {
+    const tsFilePath = `./${saveTs}/${media_key}.ts`;
+    await downloadPlaylist(response.track.playbackUrl, tsFilePath);
+  } else {
+    await downloadMp4(mp4FilePath, response.track.playbackUrl);
+  }
 }
 
 (async () => {
@@ -372,13 +355,7 @@ async function downloadGifFromTweet(tweetId, media_key) {
         continue;
       }
 
-      if (media.type === "video") {
-        await downloadVideoFromTweet(tweet.id, media.media_key);
-      }
-
-      if (media.type === "animated_gif") {
-        await downloadGifFromTweet(tweet.id, media.media_key);
-      }
+      await downloadVideoFromTweet(tweet.id, media.media_key);
     }
   }
 })();
