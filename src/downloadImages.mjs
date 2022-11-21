@@ -36,8 +36,9 @@ async function downloadImage(url) {
   }
 
   const directory = fs.readdirSync(savedTo);
-  for await (const file of directory) {
-    console.log(`Processing file ${file}`);
+  for (let i = 0; i < directory.length; i++) {
+    const file = directory[i];
+    console.log(`Processing file ${file} (${i + 1}/${directory.length})`);
 
     const content = fs.readFileSync(`${savedTo}/${file}`, "utf8");
     const json = JSON.parse(content);
