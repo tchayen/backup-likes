@@ -25,6 +25,10 @@ export default async function handler(
 
   const tweets = await Promise.all(
     file.data.map(async (tweet: Tweet) => {
+      const user = file.includes.users.find(
+        (user: User) => user.id === tweet.author_id
+      );
+
       return {
         id: tweet.id,
         text: tweet.text,
@@ -76,9 +80,7 @@ export default async function handler(
               ),
             }
           : {}),
-        user: file.includes.users.find(
-          (user: User) => user.id === tweet.author_id
-        ),
+        user,
         created_at: tweet.created_at,
       };
     })

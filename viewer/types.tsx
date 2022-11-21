@@ -44,7 +44,13 @@ export type Video = {
   media_key: string;
 };
 
-export type Media = Photo | Video;
+export type AnimatedGif = {
+  type: "animated_gif";
+  preview_image_url: string;
+  media_key: string;
+};
+
+export type Media = Photo | Video | AnimatedGif;
 
 export type File = {
   data: Tweet[];
