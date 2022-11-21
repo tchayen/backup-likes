@@ -3,7 +3,7 @@ import { StyledLink } from "./StyledLink";
 export function FormattedTweet({ tweet }: { tweet: string }) {
   const split = tweet
     .replace(/(https?:\/\/[^\s]+)/g, "§$1§")
-    .replace(/(^|\s)@(\w+)/g, "$1§@$2§")
+    .replace(/(^|\s|\.)@(\w+)/g, "$1§@$2§")
     .replace(/(^|\s)#(\w+)/g, "$1§#$2§");
 
   return (
