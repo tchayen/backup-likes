@@ -1,3 +1,5 @@
+import { Media } from "@/types";
+
 export function Attachments({ attachments }: { attachments: Media[] }) {
   if (!Array.isArray(attachments)) {
     return null;
@@ -5,7 +7,7 @@ export function Attachments({ attachments }: { attachments: Media[] }) {
 
   return (
     <div className="flex flex-col gap-4">
-      {attachments.map((attachment: any) => {
+      {attachments.map((attachment: Media) => {
         if (attachment.type === "photo") {
           return (
             <img
