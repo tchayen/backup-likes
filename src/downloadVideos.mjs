@@ -220,7 +220,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function downloadVideoFromTweet(tweetId, media_key) {
   const tsFilePath = `./videos/${media_key}.ts`;
-  const mp4FilePath = `./videos/${media_key}.mp4`;
+  const mp4FilePath = `./viewer/public/videos/${media_key}.mp4`;
 
   // Skip already processed files.
   try {

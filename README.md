@@ -27,7 +27,9 @@ You can find your `TWITTER_USER_ID` for example using [TweeterID](https://tweete
 ```bash
 git clone git@github.com:tchayen/backup-likes.git
 cd backup-likes
+# TODO: create those directories automatically.
 mkdir likes
+mkdir viewer/public/videos
 yarn
 ```
 

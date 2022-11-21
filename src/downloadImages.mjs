@@ -2,7 +2,7 @@ import fs from "fs";
 import { exec } from "child_process";
 
 const savedTo = "likes";
-const saveTo = "viewer/public/assets";
+const saveTo = "viewer/public/images";
 
 async function downloadImage(url) {
   return new Promise((resolve, reject) => {

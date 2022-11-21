@@ -13,7 +13,7 @@ export function Attachments({ attachments }: { attachments: Media[] }) {
             <img
               key={attachment.media_key}
               className="overflow-hidden rounded-xl"
-              src={attachment.url.replace("https://pbs.twimg.com/", "/assets/")}
+              src={attachment.url.replace("https://pbs.twimg.com/", "/images/")}
               alt="Tweet attachment"
             />
           );

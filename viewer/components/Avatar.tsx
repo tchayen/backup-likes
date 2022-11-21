@@ -7,7 +7,7 @@ export function Avatar({ user }: { user: User }) {
         className="h-12 w-12 rounded-full"
         src={user.profile_image_url.replace(
           "https://pbs.twimg.com/",
-          "/assets/"
+          "/images/"
         )}
         alt={`Avatar of ${user.name}`}
       />
