@@ -27,24 +27,26 @@ export function Pager({
         Current page: <strong>{page + 1}</strong> Total pages:{" "}
         <strong>{pageCount}</strong>
       </div>
-      <button
-        disabled={page === 0}
-        onClick={() => {
-          updatePage(Math.max(page - 1, 0));
-        }}
-        className="h-8 rounded bg-slate-800 px-2 font-bold"
-      >
-        Previous
-      </button>
-      <button
-        disabled={page + 1 === pageCount}
-        onClick={() => {
-          updatePage(Math.min(page + 1, pageCount - 1));
-        }}
-        className="h-8 rounded bg-slate-800 px-2 font-bold"
-      >
-        Next
-      </button>
+      {page > 0 && (
+        <button
+          onClick={() => {
+            updatePage(Math.max(page - 1, 0));
+          }}
+          className="h-8 rounded bg-slate-800 px-2 font-bold ring-sky-500 hover:bg-slate-700 focus:outline-none focus-visible:ring-2 active:bg-slate-600"
+        >
+          Previous
+        </button>
+      )}
+      {page + 1 < pageCount && (
+        <button
+          onClick={() => {
+            updatePage(Math.min(page + 1, pageCount - 1));
+          }}
+          className="h-8 rounded bg-slate-800 px-2 font-bold ring-sky-500 hover:bg-slate-700 focus:outline-none focus-visible:ring-2 active:bg-slate-600"
+        >
+          Next
+        </button>
+      )}
     </div>
   );
 }
