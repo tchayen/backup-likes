@@ -63,7 +63,7 @@ export default function Index(
     router.events.on("routeChangeStart", (url) => {
       const page = url.split("/").pop();
 
-      fetch(`/api/page?number=${page}`, {
+      fetch(`/api/page?number=${page - 1}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
