@@ -18,6 +18,17 @@ export function Attachments({ attachments }: { attachments: Media[] }) {
             />
           );
         }
+
+        if (attachment.type === "video") {
+          return (
+            <video
+              key={attachment.media_key}
+              className="overflow-hidden rounded-xl"
+              src={`/videos/${attachment.media_key}.mp4`}
+              controls
+            />
+          );
+        }
       })}
     </div>
   );
