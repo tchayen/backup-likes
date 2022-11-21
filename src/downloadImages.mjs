@@ -30,6 +30,11 @@ async function downloadImage(url) {
 }
 
 (async () => {
+  // Make sure directory exists.
+  if (!fs.existsSync(saveTo)) {
+    fs.mkdirSync(saveTo, { recursive: true });
+  }
+
   const directory = fs.readdirSync(savedTo);
   for await (const file of directory) {
     console.log(`Processing file ${file}`);

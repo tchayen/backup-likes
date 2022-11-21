@@ -5,6 +5,8 @@ import util from "util";
 import { spawn } from "child_process";
 
 const savedTo = "likes";
+const saveTs = "videos";
+const saveTo = "viewer/public/videos";
 
 if (!process.env.TWITTER_BEARER_TOKEN) {
   throw new Error('Missing "TWITTER_BEARER_TOKEN" environment variable.');
@@ -154,7 +156,7 @@ async function getPlaylistsM3u8(url) {
       },
     });
     const response = await request.text();
-    console.log(url, response);
+    console.log(url);
     return response;
   }
 }
@@ -172,7 +174,7 @@ async function getSinglePlaylistM3u8(videoHost, uri) {
       },
     });
     const response = await request.text();
-    console.log(playlistUrl, response);
+    console.log(playlistUrl);
     return response;
   }
 }
@@ -228,8 +230,8 @@ function ifFileExists(filename) {
 }
 
 async function downloadVideoFromTweet(tweetId, media_key) {
-  const tsFilePath = `./videos/${media_key}.ts`;
-  const mp4FilePath = `./viewer/public/videos/${media_key}.mp4`;
+  const tsFilePath = `./${saveTs}/${media_key}.ts`;
+  const mp4FilePath = `./${saveTo}/${media_key}.mp4`;
 
   if (ifFileExists(mp4FilePath)) {
     return;
@@ -337,6 +339,15 @@ async function downloadGifFromTweet(tweetId, media_key) {
 }
 
 (async () => {
+  // Make sure directories exists.
+  if (!fs.existsSync(saveTs)) {
+    fs.mkdirSync(saveTs);
+  }
+
+  if (!fs.existsSync(saveTo)) {
+    fs.mkdirSync(saveTo, { recursive: true });
+  }
+
   const directory = fs.readdirSync(savedTo);
 
   for await (const file of directory) {

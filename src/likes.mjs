@@ -74,9 +74,14 @@ async function resolveLinks(response) {
 }
 
 async function getLikes() {
+  // Make sure directory exists.
+  if (!fs.existsSync(saveTo)) {
+    fs.mkdirSync(saveTo);
+  }
+
   let stop = false;
-  let requests = 0;
   let nextToken = null;
+
   while (!stop) {
     const params = {
       ...(nextToken ? { pagination_token: nextToken } : {}),
@@ -101,8 +106,6 @@ async function getLikes() {
           },
         }
       );
-
-      requests += 1;
 
       const response = await request.json();
       console.log(response);

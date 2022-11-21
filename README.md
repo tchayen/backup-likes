@@ -14,22 +14,16 @@ Script for downloading Twitter likes with viewer app. Includes optional script t
 mv .env.template .env
 ```
 
-You can find your `TWITTER_USER_ID` for example using [TweeterID](https://tweeterid.com/) service.
-
-`API Key` is `TWITTER_CONSUMER_KEY`.
-
-`API Key Secret` is `TWITTER_CONSUMER_SECRET`.
-
-`Bearer Token` is `TWITTER_BEARER_TOKEN`.
+- You can find your `TWITTER_USER_ID` for example using [TweeterID](https://tweeterid.com/) service.
+- `API Key` is `TWITTER_CONSUMER_KEY`.
+- `API Key Secret` is `TWITTER_CONSUMER_SECRET`.
+- `Bearer Token` is `TWITTER_BEARER_TOKEN`.
 
 ### Download repository
 
 ```bash
 git clone git@github.com:tchayen/backup-likes.git
 cd backup-likes
-# TODO: create those directories automatically.
-mkdir likes
-mkdir viewer/public/videos
 yarn
 ```
 
@@ -38,6 +32,7 @@ yarn
 ```bash
 node src/likes.mjs # Download liked tweets.
 node src/downloadImages.mjs # Download images locally.
+node src/downloadVideos.mjs # Download videos and GIFs locally.
 ```
 
 ### Install deps of viewer app
@@ -57,6 +52,5 @@ Go to [localhost:3000](http://localhost:3000).
 
 ## TODO
 
-- [x] Fetch videos locally.
-- [ ] Fetch GIFs.
+- [ ] Detect if user did not download images/videos and use twitter ones (won't be possible with videos because it requires at least one API call that easily hits rate limit).
 - [ ] Find a way to seemlessly fetch new liked tweets without redownloading the whole archive (might require some normalization of tweets, maybe in the end storing them in a local SQLite database).
