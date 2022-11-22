@@ -1,3 +1,5 @@
+import * as dotenv from "dotenv";
+dotenv.config();
 import fs from "fs";
 import util from "util";
 import { spawn } from "child_process";
