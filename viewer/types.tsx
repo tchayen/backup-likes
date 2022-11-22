@@ -29,6 +29,14 @@ export type User = {
   profile_image_url: string;
   location: string;
   description: string;
+  protected: boolean;
+  public_metrics: {
+    followers_count: number;
+    following_count: number;
+    tweet_count: number;
+    listed_count: number;
+  };
+  verified: boolean;
 };
 
 export type Photo = {

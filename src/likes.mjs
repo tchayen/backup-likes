@@ -92,7 +92,7 @@ async function getLikes() {
       "tweet.fields":
         "lang,author_id,conversation_id,created_at,referenced_tweets",
       "user.fields":
-        "name,username,created_at,description,location,profile_image_url,url",
+        "name,username,created_at,description,location,profile_image_url,url,protected,verified,public_metrics",
       "media.fields": "type,url,preview_image_url,alt_text",
     };
 
