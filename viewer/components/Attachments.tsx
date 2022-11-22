@@ -26,12 +26,12 @@ export function Attachments({ attachments }: { attachments: Media[] }) {
               className="flex max-h-600px justify-center overflow-hidden rounded-xl"
             >
               <video
+                controls
                 poster={attachment.preview_image_url.replace(
                   "https://pbs.twimg.com/",
                   "/images/"
                 )}
                 src={`/videos/${attachment.media_key}.mp4`}
-                controls
               />
             </div>
           );
@@ -47,11 +47,15 @@ export function Attachments({ attachments }: { attachments: Media[] }) {
                 GIF
               </div>
               <video
-                className="h-full"
-                src={`/videos/${attachment.media_key}.mp4`}
                 autoPlay
                 loop
                 muted
+                className="h-full"
+                poster={attachment.preview_image_url.replace(
+                  "https://pbs.twimg.com/",
+                  "/images/"
+                )}
+                src={`/videos/${attachment.media_key}.mp4`}
               />
             </div>
           );
