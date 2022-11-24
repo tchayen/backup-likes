@@ -33,9 +33,9 @@ async function getTweetVideoConfig(tweetId) {
       authorization: `Bearer ${bearerToken}`,
     },
   });
-
   const response = await request.json();
-  console.log(url, util.inspect(response));
+  console.log(url);
+  // console.log(url, util.inspect(response));
   return response;
 }
 
@@ -186,25 +186,33 @@ async function downloadVideoFromTweet(tweetId, media_key) {
     return;
   }
 
-  const response = await getTweetVideoConfig(tweetId);
+  try {
+    const response = await getTweetVideoConfig(tweetId);
 
-  if (Array.isArray(response.errors)) {
-    console.error(response.errors);
+    if (Array.isArray(response.errors)) {
+      console.error(response.errors);
 
-    if (response.errors[0].message === "Rate limit exceeded") {
-      console.log("Rate limit exceeded, waiting 5 minutes.");
-      await sleep(5 * 60 * 1000);
-      return downloadVideoFromTweet(tweetId, media_key);
+      if (response.errors[0].message === "Rate limit exceeded") {
+        console.log("Rate limit exceeded, waiting 5 minutes.");
+        await sleep(5 * 60 * 1000);
+        return downloadVideoFromTweet(tweetId, media_key);
+      }
+
+      return;
     }
 
-    return;
-  }
-
-  if (response.track.playbackUrl.split(".").pop() === "m3u8") {
-    const tsFilePath = `./${saveTs}/${media_key}.ts`;
-    await downloadPlaylist(response.track.playbackUrl, tsFilePath, mp4FilePath);
-  } else {
-    await downloadMp4(mp4FilePath, response.track.playbackUrl);
+    if (response.track.playbackUrl.split(".").pop() === "m3u8") {
+      const tsFilePath = `./${saveTs}/${media_key}.ts`;
+      await downloadPlaylist(
+        response.track.playbackUrl,
+        tsFilePath,
+        mp4FilePath
+      );
+    } else {
+      await downloadMp4(mp4FilePath, response.track.playbackUrl);
+    }
+  } catch (error) {
+    console.error(error);
   }
 }
 
