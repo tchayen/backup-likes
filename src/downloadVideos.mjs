@@ -17,6 +17,11 @@ if (!process.env.TWITTER_BEARER_TOKEN) {
 
 const bearerToken = process.env.TWITTER_BEARER_TOKEN;
 
+const headers = {
+  Authorization: `Bearer ${bearerToken}`,
+  Accept: "application/json",
+};
+
 function parseM3u8(m3u8) {
   const parser = new m3u8Parser.Parser();
   parser.push(m3u8);
@@ -29,9 +34,7 @@ async function getTweetVideoConfig(tweetId) {
 
   const request = await fetch(url, {
     method: "GET",
-    headers: {
-      authorization: `Bearer ${bearerToken}`,
-    },
+    headers,
   });
   const response = await request.json();
   console.log(url);
@@ -40,13 +43,7 @@ async function getTweetVideoConfig(tweetId) {
 }
 
 async function getPlaylistsM3u8(url) {
-  const request = await fetch(url, {
-    headers: {
-      headers: {
-        authorization: `Bearer ${bearerToken}`,
-      },
-    },
-  });
+  const request = await fetch(url);
   const response = await request.text();
   console.log(url);
   return response;
@@ -54,31 +51,19 @@ async function getPlaylistsM3u8(url) {
 
 async function getSinglePlaylistM3u8(videoHost, uri) {
   const playlistUrl = `${videoHost}${uri}`;
-  const request = await fetch(playlistUrl, {
-    headers: {
-      headers: {
-        authorization: `Bearer ${bearerToken}`,
-      },
-    },
-  });
+  const request = await fetch(playlistUrl);
   const response = await request.text();
   console.log(playlistUrl);
   return response;
 }
 
-async function getTsFile(url) {
-  const request = await fetch(url, {
-    headers: {
-      headers: {
-        authorization: `Bearer ${bearerToken}`,
-      },
-    },
-  });
+async function getBlobFile(url) {
+  const request = await fetch(url);
   const response = await request.arrayBuffer();
   return Buffer.from(response);
 }
 
-async function processVideo(inputFile, outputFile) {
+async function processTsVideo(inputFile, outputFile) {
   return new Promise((resolve, reject) => {
     const process = spawn("ffmpeg", [
       "-y",
@@ -90,6 +75,35 @@ async function processVideo(inputFile, outputFile) {
       "aac",
       outputFile,
     ]);
+
+    process.stdout.on("data", (data) => {
+      console.log(data);
+    });
+
+    process.stderr.setEncoding("utf8");
+    process.stderr.on("data", (data) => {
+      console.log(data);
+    });
+
+    process.on("close", (code) => {
+      resolve(code);
+    });
+  });
+}
+
+async function processM4sVideo(inputFile, outputFile) {
+  return new Promise((resolve, reject) => {
+    const process = spawn("ffmpeg", [
+      "-y",
+      "-i",
+      inputFile,
+      "-vcodec",
+      "copy",
+      "-strict",
+      "-2",
+      outputFile,
+    ]);
+
     process.stdout.on("data", (data) => {
       console.log(data);
     });
@@ -114,7 +128,14 @@ function ifFileExists(filename) {
   return false;
 }
 
-async function downloadPlaylist(playbackUrl, tsFilePath, mp4FilePath) {
+function cleanUpTsFile(blobFilePath) {
+  try {
+    fs.statSync(blobFilePath); // Check if exists. If it errors - no file, no problem.
+    fs.unlinkSync(blobFilePath);
+  } catch {}
+}
+
+async function downloadPlaylist(playbackUrl, media_key, mp4FilePath) {
   const videoHost = new URL(playbackUrl).origin;
   const playlist = await getPlaylistsM3u8(playbackUrl);
 
@@ -138,23 +159,44 @@ async function downloadPlaylist(playbackUrl, tsFilePath, mp4FilePath) {
 
   const singlePlaylistManifest = parseM3u8(singlePlaylist);
 
+  const extension = singlePlaylistManifest.segments[0].uri.split(".").pop();
+  const blobFilePath = `./${saveTs}/${media_key}.${
+    extension === "ts" ? "ts" : "mp4"
+  }`;
+
+  // Make sure that file doesn't exist.
+  cleanUpTsFile(blobFilePath);
+
   try {
+    // Download init file if applicable. They are used with *.m4s files.
+    const line = singlePlaylist
+      .split("\n")
+      .filter((line) => line.startsWith("#EXT-X-MAP:URI"));
+    if (line.length === 1) {
+      const url = line[0].split("=")[1].split('"')[1];
+      const fileName = `${videoHost}${url}`;
+      console.log(`Downloading init file ${fileName}`);
+      const blob = await getBlobFile(fileName);
+      fs.appendFileSync(blobFilePath, blob, "binary");
+    }
+
     for await (const segment of singlePlaylistManifest.segments) {
-      const tsUrl = `${videoHost}${segment.uri}`;
-      console.log(`Downloading ${tsUrl}`);
-      const ts = await getTsFile(tsUrl);
-      fs.appendFileSync(tsFilePath, ts, "binary");
+      const blobUrl = `${videoHost}${segment.url}`;
+      console.log(`Downloading ${blobUrl}`);
+      const blob = await getBlobFile(blobUrl);
+      fs.appendFileSync(blobFilePath, blob, "binary");
     }
   } catch (error) {
-    // If something went wrong for whatever reason, delete the incomplete *.ts file.
+    // If something went wrong for whatever reason, delete the incomplete *.ts/*.m4s file.
     console.error(error);
-    try {
-      fs.statSync(tsFilePath); // Check if exists. If it errors - no file, no problem.
-      fs.unlinkSync(tsFilePath);
-    } catch {}
+    cleanUpTsFile(blobFilePath);
   }
 
-  await processVideo(tsFilePath, mp4FilePath);
+  if (extension === "ts") {
+    await processTsVideo(blobFilePath, mp4FilePath);
+  } else if (extension === "m4s") {
+    await processM4sVideo(blobFilePath, mp4FilePath);
+  }
 }
 
 async function downloadMp4(gifFilePath, url) {
@@ -201,15 +243,16 @@ async function downloadVideoFromTweet(tweetId, media_key) {
       return;
     }
 
-    if (response.track.playbackUrl.split(".").pop() === "m3u8") {
-      const tsFilePath = `./${saveTs}/${media_key}.ts`;
+    if (response.track.playbackUrl.split(".").pop().startsWith("m3u8")) {
       await downloadPlaylist(
         response.track.playbackUrl,
-        tsFilePath,
+        media_key,
         mp4FilePath
       );
-    } else {
+    } else if (response.track.playbackUrl.split(".").pop().startsWith("mp4")) {
       await downloadMp4(mp4FilePath, response.track.playbackUrl);
+    } else {
+      console.error(`Unexpected file: ${response.track.playbackUrl}`);
     }
   } catch (error) {
     console.error(error);
