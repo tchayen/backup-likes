@@ -181,7 +181,7 @@ async function downloadPlaylist(playbackUrl, media_key, mp4FilePath) {
     }
 
     for await (const segment of singlePlaylistManifest.segments) {
-      const blobUrl = `${videoHost}${segment.url}`;
+      const blobUrl = `${videoHost}${segment.uri}`;
       console.log(`Downloading ${blobUrl}`);
       const blob = await getBlobFile(blobUrl);
       fs.appendFileSync(blobFilePath, blob, "binary");
