@@ -36,10 +36,16 @@ async function getTweetVideoConfig(tweetId) {
     method: "GET",
     headers,
   });
-  const response = await request.json();
-  console.log(url);
-  // console.log(url, util.inspect(response));
-  return response;
+  const copy = request.clone();
+  try {
+    const response = await request.json();
+    // console.log(url, util.inspect(response));
+    console.log(url);
+    return response;
+  } catch (error) {
+    console.error(`Error. Not a JSON: ${await copy.text()}`);
+    return;
+  }
 }
 
 async function getPlaylistsM3u8(url) {
