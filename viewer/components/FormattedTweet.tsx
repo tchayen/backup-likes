@@ -7,6 +7,8 @@ export function FormattedTweet({ tweet }: { tweet: string }) {
       /https:\/\/twitter\.com\/[A-z0-9]+\/status\/\d+\/(photo|video)\/\d+$/g,
       ""
     )
+    // Filter out tweet links because they appear as quoted.
+    .replace(/https:\/\/twitter\.com\/[A-z0-9]+\/status\/\d+/g, "")
     // Mark links.
     .replace(/(https?:\/\/[^\s]+)/g, "§$1§")
     // Mark user handles.
