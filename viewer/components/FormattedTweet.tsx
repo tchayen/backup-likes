@@ -4,7 +4,7 @@ export function FormattedTweet({ tweet }: { tweet: string }) {
   const split = tweet
     // Filter out images and videos which are attached.
     .replace(
-      /https:\/\/twitter\.com\/[A-z0-9]+\/status\/\d+\/(photo|video)\/\d+$/g,
+      /https:\/\/twitter\.com\/[A-z0-9]+\/status\/\d+\/(photo|video)\/\d+/g,
       ""
     )
     // Filter out tweet links because they appear as quoted.
