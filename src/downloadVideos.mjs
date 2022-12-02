@@ -1,11 +1,13 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 import fs from "fs";
-import util from "util";
 import { spawn } from "child_process";
 import fetch from "node-fetch";
 import m3u8Parser from "m3u8-parser";
 import { getTime, sleep } from "./utils.mjs";
+
+// Initially based on https://github.com/h4ckninja/twitter-video-downloader/blob/master/twitter-dl.py,
+// extended to support GIFs and newer video format.
 
 const savedTo = "likes";
 const saveTs = "videos";
